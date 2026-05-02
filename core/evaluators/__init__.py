@@ -57,3 +57,13 @@ class BaseEvaluator(ABC):
     def get_name(self) -> str:
         """Return the name of this evaluator."""
         return self.name
+
+
+# Import evaluators for easy access
+from core.evaluators.syntax_evaluator import SyntaxEvaluator
+from core.evaluators.security_evaluator import SecurityEvaluator
+from core.evaluators.performance_evaluator import PerformanceEvaluator
+from core.evaluators.radon_evaluator import RadonEvaluator
+from core.evaluators.execution_evaluator import ExecutionEvaluator
+
+__all__ = ['BaseEvaluator', 'EvaluationResult', 'SyntaxEvaluator', 'SecurityEvaluator', 'PerformanceEvaluator', 'RadonEvaluator', 'ExecutionEvaluator']

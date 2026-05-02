@@ -1,6 +1,0 @@
-File,Model,Prompt,Evaluator,Passed,Score,Error Message,Timestamp
-data_analysis_1_20260502_133328.py,deepseek-coder-v2_latest,data_analysis_1_20260502,SyntaxEvaluator,YES,1.00,,2026-05-02T13:59:22.574924
-data_cleaning_20260502_133406.py,deepseek-coder-v2_latest,data_cleaning_20260502,SyntaxEvaluator,YES,1.00,,2026-05-02T13:59:22.575926
-etl_api_20260502_133426.py,deepseek-coder-v2_latest,etl_api_20260502,SyntaxEvaluator,YES,1.00,,2026-05-02T13:59:22.575926
-etl_basic_20260502_133448.py,deepseek-coder-v2_latest,etl_basic_20260502,SyntaxEvaluator,YES,1.00,,2026-05-02T13:59:22.576929
-sql_etl_20260502_133530.py,deepseek-coder-v2_latest,sql_etl_20260502,SyntaxEvaluator,YES,1.00,,2026-05-02T13:59:22.577925

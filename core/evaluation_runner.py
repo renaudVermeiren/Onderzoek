@@ -2,25 +2,41 @@
 Evaluation Runner Module
 
 Runs all registered evaluators on generated code files.
+Organizes results by evaluation run with separate folders for each evaluator.
 """
 
 import json
 from pathlib import Path
 from typing import List, Dict, Any
 from datetime import datetime
+import shutil
 
 from config import OUTPUT_DIR, RESULTS_DIR
 from core.evaluators import BaseEvaluator, EvaluationResult
-from core.evaluators.syntax_evaluator import SyntaxEvaluator
+from typing import Optional
 
 
 class EvaluationRunner:
     """
     Runner that executes all evaluators on generated code files.
     
+    Creates a folder structure per evaluation run:
+    results/
+    └── run_20260502_143530/
+        ├── evaluation_report.json       # Combined results from all evaluators
+        ├── summary.csv                  # CSV summary for easy viewing
+        ├── syntax/                      # Syntax evaluator results
+        │   ├── results.json
+        │   └── details/
+        ├── security/                    # Security evaluator results
+        │   ├── results.json
+        │   └── details/
+        └── ...                          # Other evaluators
+    
     Usage:
         runner = EvaluationRunner()
         runner.register_evaluator(SyntaxEvaluator())
+        runner.register_evaluator(SecurityEvaluator())
         results = runner.run_evaluation()
     """
     
@@ -29,6 +45,8 @@ class EvaluationRunner:
         self.results_dir = Path(results_dir)
         self.evaluators: List[BaseEvaluator] = []
         self.results: List[EvaluationResult] = []
+        self.current_run_dir: Optional[Path] = None
+        self.run_timestamp: Optional[str] = None
         
         # Ensure results directory exists
         self.results_dir.mkdir(parents=True, exist_ok=True)
@@ -37,6 +55,22 @@ class EvaluationRunner:
         """Register an evaluator to be run."""
         self.evaluators.append(evaluator)
         print(f"   ✓ Registered evaluator: {evaluator.get_name()}")
+    
+    def _create_run_directory(self):
+        """Create a new directory for this evaluation run."""
+        self.run_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        self.current_run_dir = self.results_dir / f"run_{self.run_timestamp}"
+        self.current_run_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Create subdirectories for each evaluator
+        for evaluator in self.evaluators:
+            evaluator_dir = self.current_run_dir / evaluator.get_name().lower()
+            evaluator_dir.mkdir(parents=True, exist_ok=True)
+            # Create details subdirectory
+            (evaluator_dir / "details").mkdir(parents=True, exist_ok=True)
+        
+        print(f"   ✓ Created evaluation run directory: {self.current_run_dir.name}")
+        return self.current_run_dir
     
     def load_metadata(self) -> Dict[str, Any]:
         """Load the most recent metadata file from generated_code directory."""
@@ -99,6 +133,9 @@ class EvaluationRunner:
             print("   ⚠️ No evaluators registered")
             return []
         
+        # Create directory structure for this run
+        self._create_run_directory()
+        
         print("🔍 Finding generated code files...")
         generated_files = self.find_generated_files()
         
@@ -152,25 +189,111 @@ class EvaluationRunner:
         return self.results
     
     def save_results(self):
-        """Save evaluation results to JSON file."""
+        """
+        Save evaluation results organized by evaluator in separate folders.
+        """
         if not self.results:
             print("\n⚠️ No results to save")
             return
         
-        print("\n💾 Saving results...")
+        if not self.current_run_dir:
+            print("\n⚠️ No run directory created")
+            return
         
-        # Prepare results data
-        results_data = {
-            "evaluation_timestamp": datetime.now().isoformat(),
-            "total_files_evaluated": len(set(r.file_path for r in self.results)),
-            "total_evaluations": len(self.results),
-            "evaluators_used": [e.get_name() for e in self.evaluators],
+        print(f"\n💾 Saving results to: {self.current_run_dir.name}")
+        
+        # Group results by evaluator
+        results_by_evaluator: Dict[str, List[EvaluationResult]] = {}
+        for result in self.results:
+            evaluator_name = result.evaluator_name
+            if evaluator_name not in results_by_evaluator:
+                results_by_evaluator[evaluator_name] = []
+            results_by_evaluator[evaluator_name].append(result)
+        
+        # Save individual evaluator results
+        for evaluator_name, evaluator_results in results_by_evaluator.items():
+            self._save_evaluator_results(evaluator_name, evaluator_results)
+        
+        # Save combined report
+        self._save_combined_report(results_by_evaluator)
+        
+        # Save CSV summary
+        self._save_csv_summary(results_by_evaluator)
+        
+        print(f"   ✓ All results saved successfully")
+    
+    def _save_evaluator_results(self, evaluator_name: str, results: List[EvaluationResult]):
+        """Save results for a specific evaluator."""
+        if self.current_run_dir is None:
+            return
+        evaluator_dir = self.current_run_dir / evaluator_name.lower()
+        
+        # Prepare evaluator-specific data
+        evaluator_data = {
+            "evaluator_name": evaluator_name,
+            "run_timestamp": self.run_timestamp,
+            "total_files": len(set(r.file_path for r in results)),
+            "total_evaluations": len(results),
             "summary": {
-                "total_passed": sum(1 for r in self.results if r.passed),
-                "total_failed": sum(1 for r in self.results if not r.passed),
-                "pass_rate": sum(1 for r in self.results if r.passed) / len(self.results) if self.results else 0
+                "total_passed": sum(1 for r in results if r.passed),
+                "total_failed": sum(1 for r in results if not r.passed),
+                "pass_rate": sum(1 for r in results if r.passed) / len(results) if results else 0,
+                "average_score": sum(r.score for r in results) / len(results) if results else 0
             },
             "results": [
+                {
+                    "file_path": r.file_path,
+                    "prompt_id": r.prompt_id,
+                    "model_name": r.model_name,
+                    "passed": r.passed,
+                    "score": r.score,
+                    "details": r.details,
+                    "error_message": r.error_message,
+                    "timestamp": r.timestamp
+                }
+                for r in results
+            ]
+        }
+        
+        # Save to JSON
+        results_file = evaluator_dir / "results.json"
+        with open(results_file, 'w', encoding='utf-8') as f:
+            json.dump(evaluator_data, f, indent=2)
+        
+        print(f"   ✓ {evaluator_name}: {len(results)} result(s) saved")
+    
+    def _save_combined_report(self, results_by_evaluator: Dict[str, List[EvaluationResult]]):
+        """Save a combined report with all evaluator results."""
+        if self.current_run_dir is None:
+            return
+        # Calculate overall statistics
+        all_results = []
+        for results in results_by_evaluator.values():
+            all_results.extend(results)
+        
+        combined_data = {
+            "evaluation_timestamp": datetime.now().isoformat(),
+            "run_timestamp": self.run_timestamp,
+            "run_directory": str(self.current_run_dir.name),
+            "total_files_evaluated": len(set(r.file_path for r in all_results)),
+            "total_evaluations": len(all_results),
+            "evaluators_used": list(results_by_evaluator.keys()),
+            "overall_summary": {
+                "total_passed": sum(1 for r in all_results if r.passed),
+                "total_failed": sum(1 for r in all_results if not r.passed),
+                "pass_rate": sum(1 for r in all_results if r.passed) / len(all_results) if all_results else 0
+            },
+            "evaluator_summaries": {
+                evaluator_name: {
+                    "total_evaluations": len(results),
+                    "passed": sum(1 for r in results if r.passed),
+                    "failed": sum(1 for r in results if not r.passed),
+                    "pass_rate": sum(1 for r in results if r.passed) / len(results) if results else 0,
+                    "average_score": sum(r.score for r in results) / len(results) if results else 0
+                }
+                for evaluator_name, results in results_by_evaluator.items()
+            },
+            "all_results": [
                 {
                     "file_path": r.file_path,
                     "prompt_id": r.prompt_id,
@@ -182,27 +305,25 @@ class EvaluationRunner:
                     "error_message": r.error_message,
                     "timestamp": r.timestamp
                 }
-                for r in self.results
+                for r in all_results
             ]
         }
         
-        # Save to file
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        results_file = self.results_dir / f"evaluation_results_{timestamp}.json"
+        # Save combined report
+        report_file = self.current_run_dir / "evaluation_report.json"
+        with open(report_file, 'w', encoding='utf-8') as f:
+            json.dump(combined_data, f, indent=2)
         
-        with open(results_file, 'w', encoding='utf-8') as f:
-            json.dump(results_data, f, indent=2)
-        
-        print(f"   ✓ Results saved to: {results_file}")
-        
-        # Also save a summary CSV for easy viewing
-        self._save_csv_summary(results_data, timestamp)
+        print(f"   ✓ Combined report saved")
     
-    def _save_csv_summary(self, results_data: Dict[str, Any], timestamp: str):
-        """Save a CSV summary for easy spreadsheet viewing."""
+    def _save_csv_summary(self, results_by_evaluator: Dict[str, List[EvaluationResult]]):
+        """Save CSV summaries for easy spreadsheet viewing."""
+        if self.current_run_dir is None:
+            return
         import csv
         
-        csv_file = self.results_dir / f"evaluation_summary_{timestamp}.csv"
+        # Save detailed CSV with all results
+        csv_file = self.current_run_dir / "summary.csv"
         
         with open(csv_file, 'w', newline='', encoding='utf-8') as f:
             writer = csv.writer(f)
@@ -211,19 +332,41 @@ class EvaluationRunner:
                 'Score', 'Error Message', 'Timestamp'
             ])
             
-            for result in results_data['results']:
-                writer.writerow([
-                    Path(result['file_path']).name,
-                    result['model_name'],
-                    result['prompt_id'],
-                    result['evaluator'],
-                    'YES' if result['passed'] else 'NO',
-                    f"{result['score']:.2f}",
-                    result.get('error_message', '') if result.get('error_message') else '',
-                    result['timestamp']
-                ])
+            for evaluator_name, results in results_by_evaluator.items():
+                for result in results:
+                    writer.writerow([
+                        Path(result.file_path).name,
+                        result.model_name,
+                        result.prompt_id,
+                        result.evaluator_name,
+                        'YES' if result.passed else 'NO',
+                        f"{result.score:.2f}",
+                        result.error_message if result.error_message else '',
+                        result.timestamp
+                    ])
         
-        print(f"   ✓ CSV summary saved to: {csv_file}")
+        print(f"   ✓ CSV summary saved")
+        
+        # Save per-evaluator CSV files
+        for evaluator_name, results in results_by_evaluator.items():
+            evaluator_csv = self.current_run_dir / f"{evaluator_name.lower()}_summary.csv"
+            with open(evaluator_csv, 'w', newline='', encoding='utf-8') as f:
+                writer = csv.writer(f)
+                writer.writerow([
+                    'File', 'Model', 'Prompt', 'Passed', 
+                    'Score', 'Details', 'Error Message'
+                ])
+                
+                for result in results:
+                    writer.writerow([
+                        Path(result.file_path).name,
+                        result.model_name,
+                        result.prompt_id,
+                        'YES' if result.passed else 'NO',
+                        f"{result.score:.2f}",
+                        json.dumps(result.details),
+                        result.error_message if result.error_message else ''
+                    ])
     
     def print_summary(self):
         """Print a summary of evaluation results."""
@@ -233,6 +376,8 @@ class EvaluationRunner:
         
         print("\n" + "=" * 70)
         print("📊 EVALUATION SUMMARY")
+        print("=" * 70)
+        print(f"Run Directory: {self.current_run_dir.name if self.current_run_dir else 'N/A'}")
         print("=" * 70)
         
         total = len(self.results)
@@ -258,7 +403,10 @@ class EvaluationRunner:
         
         for evaluator, stats in evaluator_results.items():
             rate = (stats['passed'] / stats['total'] * 100) if stats['total'] > 0 else 0
-            print(f"  • {evaluator}: {stats['passed']}/{stats['total']} passed ({rate:.1f}%)")
+            avg_score = sum(r.score for r in self.results if r.evaluator_name == evaluator) / stats['total']
+            print(f"  • {evaluator}:")
+            print(f"    - Passed: {stats['passed']}/{stats['total']} ({rate:.1f}%)")
+            print(f"    - Avg Score: {avg_score:.2f}")
         
         # Group by model
         print("\nResults by Model:")

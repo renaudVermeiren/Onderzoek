@@ -17,6 +17,10 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from core.evaluation_runner import EvaluationRunner
 from core.evaluators.syntax_evaluator import SyntaxEvaluator
+from core.evaluators.security_evaluator import SecurityEvaluator
+from core.evaluators.execution_evaluator import ExecutionEvaluator
+from core.evaluators.performance_evaluator import PerformanceEvaluator
+from core.evaluators.radon_evaluator import RadonEvaluator
 
 
 def main():
@@ -24,18 +28,23 @@ def main():
     print("=" * 70)
     print("🔍 CODE EVALUATION RUNNER")
     print("=" * 70)
-    print("\nThis script evaluates generated code for syntax correctness.")
+    print("\nThis script evaluates generated code for syntax, security, executability, performance, and maintainability.")
     print("Results will be saved in the 'results' folder.\n")
     
     # Create evaluation runner
     runner = EvaluationRunner()
     
     # Register evaluators
+    # Note: ExecutionEvaluator should run before PerformanceEvaluator
+    # to clearly separate "code doesn't run" from "code runs but slow"
     print("📋 Registering evaluators...")
     runner.register_evaluator(SyntaxEvaluator())
+    runner.register_evaluator(SecurityEvaluator())
+    runner.register_evaluator(ExecutionEvaluator())
+    runner.register_evaluator(PerformanceEvaluator())
+    runner.register_evaluator(RadonEvaluator())
     # Add more evaluators here in the future, for example:
     # runner.register_evaluator(StyleEvaluator())
-    # runner.register_evaluator(SecurityEvaluator())
     
     # Run evaluation
     results = runner.run_evaluation()
