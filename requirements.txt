@@ -1,0 +1,10 @@
+certifi==2026.4.22
+charset-normalizer==3.4.7
+idna==3.13
+requests==2.33.1
+urllib3==2.6.3
+ollama>=0.1.0
+radon>=6.0.1
+pylint>=3.0.0
+bandit>=1.7.5
+pandas>=2.0.0

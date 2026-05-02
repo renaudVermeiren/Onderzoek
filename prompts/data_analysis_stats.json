@@ -1,0 +1,8 @@
+{
+  "id": "data_analysis_1",
+  "name": "Statistical Data Analysis",
+  "description": "Schrijf een data analyse script dat statistische berekeningen doet op een dataset",
+  "prompt": "Schrijf een Python script voor data analyse dat het volgende doet:\n\n1. Genereer een synthetische dataset met 1000 rijen en de volgende kolommen:\n   - 'datum': afgelopen 365 dagen\n   - 'product': willekeurige keuze uit ['A', 'B', 'C', 'D']\n   - 'verkoop': willekeurige waarde tussen 100 en 1000\n   - 'kosten': willekeurige waarde tussen 50 en 500\n\n2. Bereken de volgende statistieken:\n   - Totale omzet per product\n   - Gemiddelde marge (verkoop - kosten) per product\n   - Standaarddeviatie van verkopen per product\n   - Maandelijkse trend van totale verkopen\n\n3. Print de resultaten in een overzichtelijk formaat\n\nGebruik pandas en numpy. Zorg voor reproduceerbaarheid met een random seed.\n\nBELANGRIJK: Geef ALLEEN de Python code terug. Geen markdown formatting, geen ```python blokken, geen uitleg tekst, geen introductie, geen conclusie. Alleen de ruwe Python code die direct in een .py bestand kan worden opgeslagen.",
+  "category": "data_analysis",
+  "expected_output_type": "python_script"
+}
