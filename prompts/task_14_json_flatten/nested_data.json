@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "name": "Alice Johnson",
+    "email": "alice@example.com",
+    "address": {
+      "street": "123 Main St",
+      "city": "New York",
+      "country": "USA"
+    }
+  },
+  {
+    "id": 2,
+    "name": "Bob Smith",
+    "email": "bob@example.com",
+    "address": {
+      "street": "456 Oak Ave",
+      "city": "London",
+      "country": "UK"
+    }
+  },
+  {
+    "id": 3,
+    "name": "Charlie Brown",
+    "email": "charlie@example.com",
+    "address": {
+      "street": "789 Pine Rd",
+      "city": "Paris",
+      "country": "France"
+    }
+  }
+]

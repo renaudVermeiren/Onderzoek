@@ -1,0 +1,18 @@
+{
+  "id": "task_15",
+  "name": "Write Clean Output",
+  "category": "data_cleaning",
+  "difficulty": "easy",
+  "prompt": "Schrijf een Python script dat vuile data opschoont:\n\n1. Lees 'dirty_data.csv' in\n2. Voer de volgende cleaning stappen uit:\n   - Verwijder alle rijen met null/NaN waarden\n   - Converteer de 'age' kolom naar integer type\n   - Converteer de 'salary' kolom naar float type\n   - Trim spaties van de 'name' kolom\n3. Sla het opgeschoonde resultaat op naar 'clean_data.csv'\n4. Print het aantal verwijderde rijen\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
+  "expected_behavior": "Het script leest dirty data, verwijdert nulls, fixt datatypes (age=int, salary=float), trimt names, en slaat op als clean_data.csv.",
+  "evaluation_criteria": [
+    "Geen null waarden meer in output",
+    "age kolom is integer type",
+    "salary kolom is float type",
+    "name kolom heeft geen voor/achter spaties",
+    "Correct aantal rijen verwijderd (2 rijen met nulls)",
+    "Script schrijft naar clean_data.csv"
+  ],
+  "input_files": ["dirty_data.csv"],
+  "output_file": "clean_data.csv"
+}

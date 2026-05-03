@@ -1,0 +1,4 @@
+id,name,email,city
+1,  Alice  ,Alice@Example.COM, Brussels 
+2,Bob,invalid-email,Antwerp
+3,  Charlie  ,charlie@test.org,Ghent

@@ -1,0 +1,18 @@
+{
+  "id": "task_09",
+  "name": "Multi-table Join",
+  "category": "joins",
+  "difficulty": "medium",
+  "prompt": "Schrijf een Python script dat drie tabellen joined:\n\n1. Lees 'users.csv', 'orders.csv', en 'products.csv' in\n2. Join users met orders op user_id\n3. Join het resultaat met products op product_id\n4. Selecteer kolommen: user_name, product_name, quantity, total_price\n5. Zorg dat er geen duplicaten ontstaan door incorrecte joins\n6. Sla op naar 'output.csv'\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
+  "expected_behavior": "Multi-table join correct uitgevoerd met juiste join keys, geen duplicaten.",
+  "evaluation_criteria": [
+    "Correcte join keys gebruikt (user_id en product_id)",
+    "Output bevat juiste kolommen: user_name, product_name, quantity, total_price",
+    "Geen duplicaten in output",
+    "Alice heeft 2 producten, Bob heeft 1 product",
+    "Script leest 3 input files en schrijft naar output.csv",
+    "Gebruikt pandas merge voor joins"
+  ],
+  "input_files": ["users.csv", "orders.csv", "products.csv"],
+  "output_file": "output.csv"
+}

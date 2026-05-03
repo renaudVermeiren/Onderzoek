@@ -1,0 +1,6 @@
+name,email,city,extra_info
+ John Doe , Test.User@example.com,  New York 
+Jane Smith,janesmith@domain.com, Los Angeles 
+Peter Jones,peterjones@invalid,Boston
+   Alice Brown , Alice.Brown@corp.net,  Miami  
+Invalid Email,not-an-email,  Miami

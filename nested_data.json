@@ -1,0 +1,38 @@
+[
+    {
+        "id": "u001",
+        "user": {
+            "name": "Alice Johnson",
+            "email": "alice.j@example.com"
+        },
+        "address": {
+            "street": "10 Downing St",
+            "city": "London",
+            "country": "UK"
+        }
+    },
+    {
+        "id": "u002",
+        "user": {
+            "name": "Bob Smith",
+            "email": "bob.s@example.com"
+        },
+        "address": {
+            "street": "22 Baker St",
+            "city": "London",
+            "country": "UK"
+        }
+    },
+    {
+        "id": "u003",
+        "user": {
+            "name": "Charlie Brown",
+            "email": "charlie.b@example.com"
+        },
+        "address": {
+            "street": "3 Quince Lane",
+            "city": "New York",
+            "country": "USA"
+        }
+    }
+]

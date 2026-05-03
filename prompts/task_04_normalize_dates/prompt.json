@@ -1,0 +1,19 @@
+{
+  "id": "task_04",
+  "name": "Normalize Date Formats",
+  "category": "data_cleaning",
+  "difficulty": "medium",
+  "prompt": "Schrijf een Python script dat een CSV bestand inleest en datum formaten normaliseert:\n\n1. De 'date' kolom bevat datums in verschillende formaten: YYYY-MM-DD, DD/MM/YYYY, MM-DD-YYYY\n2. Converteer ALLE datums naar ISO formaat: YYYY-MM-DD\n3. Het script moet automatisch het formaat herkennen en correct parsen\n4. Sla het resultaat op naar output.csv met genormaliseerde datums\n\nHet input bestand is 'input.csv'. Schrijf de output naar 'output.csv'.\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
+  "expected_behavior": "Het script herkent automatisch verschillende datum formaten en converteert ze allemaal naar YYYY-MM-DD formaat.",
+  "evaluation_criteria": [
+    "Alle datums zijn in YYYY-MM-DD formaat",
+    "2024-01-01 blijft 2024-01-01 (reeds correct)",
+    "15/02/2024 wordt 2024-02-15",
+    "03-25-2024 wordt 2024-03-25",
+    "Script leest van input.csv en schrijft naar output.csv",
+    "Gebruikt pandas en/of dateutil voor datum parsing",
+    "Alle rijen behouden (5 rijen in output)"
+  ],
+  "input_files": ["input.csv"],
+  "output_file": "output.csv"
+}

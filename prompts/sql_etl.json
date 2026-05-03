@@ -1,8 +1,0 @@
-{
-  "id": "sql_etl",
-  "name": "SQL to DataFrame ETL",
-  "description": "Schrijf een script dat SQL queries uitvoert en resultaten verwerkt",
-  "prompt": "Schrijf een Python script dat een database ETL proces uitvoert:\n\n1. Gebruik sqlite3 om een in-memory database te maken\n2. Maak een tabel 'verkopen' met kolommen: id, product, categorie, prijs, aantal, verkoop_datum\n3. Voeg minimaal 50 voorbeeldrecords toe met verschillende categorieën en datums\n4. Voer de volgende SQL analyses uit en sla resultaten op in pandas DataFrames:\n   - Totale omzet per categorie\n   - Top 5 best verkochte producten\n   - Maandelijkse verkooptrend (laatste 6 maanden)\n   - Gemiddelde orderwaarde per categorie\n\n5. Exporteer elk resultaat naar een aparte CSV file\n6. Genereer een samenvattingsrapport\n\nGebruik pandas, sqlite3, en datetime. Zorg voor goede database connectie handling.\n\nBELANGRIJK: Geef ALLEEN de Python code terug. Geen markdown formatting, geen ```python blokken, geen uitleg tekst, geen introductie, geen conclusie. Alleen de ruwe Python code die direct in een .py bestand kan worden opgeslagen.",
-  "category": "etl",
-  "expected_output_type": "python_script"
-}

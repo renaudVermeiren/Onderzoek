@@ -1,8 +1,0 @@
-{
-  "id": "data_cleaning",
-  "name": "Data Cleaning Pipeline",
-  "description": "Schrijf een data cleaning script voor een vervuilde dataset",
-  "prompt": "Schrijf een Python script voor data cleaning dat het volgende doet:\n\n1. Maak een pandas DataFrame met deze vervuilde data (simuleer een 'vuile' dataset):\n   - Ontbrekende waarden (NaN)\n   - Duplicaten\n   - Inconsistente formatting (bijv. datums als strings in verschillende formaten)\n   - Outliers (extreme waarden)\n   - Whitespace in tekstkolommen\n   - Mixed case in categorische kolommen\n\n2. Implementeer een cleaning pipeline die:\n   - Ontbrekende waarden identificeert en behandelt (verwijderen of invullen)\n   - Duplicaten verwijdert\n   - Datums normaliseert naar ISO formaat (YYYY-MM-DD)\n   - Outliers detecteert met de IQR methode\n   - Whitespace trimt\n   - Categorische waarden normaliseert naar lowercase\n   - Een rapport genereert van alle uitgevoerde cleaning stappen\n\n3. Print het originele vs. opgeschoonde dataset overzicht\n\nGebruik pandas. Documenteer elke cleaning stap met comments.\n\nBELANGRIJK: Geef ALLEEN de Python code terug. Geen markdown formatting, geen ```python blokken, geen uitleg tekst, geen introductie, geen conclusie. Alleen de ruwe Python code die direct in een .py bestand kan worden opgeslagen.",
-  "category": "data_cleaning",
-  "expected_output_type": "python_script"
-}

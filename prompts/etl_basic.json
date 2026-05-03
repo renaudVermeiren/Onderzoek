@@ -1,8 +1,0 @@
-{
-  "id": "etl_basic",
-  "name": "ETL Basic Transformation",
-  "description": "Schrijf een ETL script dat een CSV file inleest, kolommen transformeert, en wegschrijft naar een nieuwe CSV",
-  "prompt": "Schrijf een Python script dat een ETL (Extract, Transform, Load) proces implementeert. Het script moet:\n\n1. Een CSV file inlezen met kolommen: 'naam', 'leeftijd', 'stad', 'salaris'\n2. De volgende transformaties toepassen:\n   - Converteer 'leeftijd' naar integer\n   - Converteer 'salaris' naar float en verwijder het euro-teken\n   - Voeg een nieuwe kolom 'leeftijdsgroep' toe (jong: <30, midden: 30-50, oud: >50)\n   - Filter alleen personen met salaris > 30000\n3. Schrijf het resultaat naar een nieuwe CSV file\n\nZorg voor goede error handling en logging. Gebruik pandas voor de data manipulatie.\n\nBELANGRIJK: Geef ALLEEN de Python code terug. Geen markdown formatting, geen ```python blokken, geen uitleg tekst, geen introductie, geen conclusie. Alleen de ruwe Python code die direct in een .py bestand kan worden opgeslagen.",
-  "category": "etl",
-  "expected_output_type": "python_script"
-}

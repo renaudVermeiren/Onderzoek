@@ -1,0 +1,18 @@
+{
+  "id": "task_02",
+  "name": "Drop Rows with Critical Missing Fields",
+  "category": "data_cleaning",
+  "difficulty": "easy",
+  "prompt": "Schrijf een Python script dat een CSV bestand inleest en rijen verwijdert waar kritieke velden ontbreken:\n\n1. Verwijder alle rijen waar 'user_id' NULL/None/leeg is\n2. Verwijder alle rijen waar 'timestamp' NULL/None/leeg is\n3. Andere kolommen met missing values mogen behouden blijven\n4. Sla het gefilterde resultaat op naar een nieuw CSV bestand\n\nHet input bestand is 'input.csv'. Schrijf de output naar 'output.csv'.\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
+  "expected_behavior": "Het script verwijdert rijen 2 en 5 omdat user_id of timestamp ontbreekt. Rij 4 mag blijven omdat alleen amount ontbreekt (niet kritiek).",
+  "evaluation_criteria": [
+    "Output heeft exact 3 rijen (headers + 2 data rows)",
+    "Geen null waarden in user_id kolom",
+    "Geen null waarden in timestamp kolom",
+    "Rijen met missing amount mogen behouden blijven",
+    "Script leest van input.csv en schrijft naar output.csv",
+    "Gebruikt pandas voor data manipulatie"
+  ],
+  "input_files": ["input.csv"],
+  "output_file": "output.csv"
+}

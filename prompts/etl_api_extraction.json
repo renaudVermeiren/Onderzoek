@@ -1,8 +1,0 @@
-{
-  "id": "etl_api",
-  "name": "API Data Extraction",
-  "description": "Schrijf een script dat data ophaalt van een API en verwerkt",
-  "prompt": "Schrijf een Python script dat data ophaalt van een REST API en verwerkt:\n\n1. Haal data op van een fictieve JSONPlaceholder API (https://jsonplaceholder.typicode.com/users)\n2. Transformeer de data naar het volgende formaat:\n   - 'id' → behouden\n   - 'name' → 'volledige_naam'\n   - 'email' → behouden\n   - 'address.city' → 'stad'\n   - 'company.name' → 'bedrijf'\n3. Filter alleen gebruikers uit een stad die begint met de letter 'G'\n4. Sorteer op bedrijfsnaam\n5. Sla op als JSON file\n\nGebruik requests voor de API calls en zorg voor error handling (timeouts, HTTP errors).\n\nBELANGRIJK: Geef ALLEEN de Python code terug. Geen markdown formatting, geen ```python blokken, geen uitleg tekst, geen introductie, geen conclusie. Alleen de ruwe Python code die direct in een .py bestand kan worden opgeslagen.",
-  "category": "etl",
-  "expected_output_type": "python_script"
-}

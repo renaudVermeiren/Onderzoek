@@ -1,0 +1,18 @@
+{
+  "id": "task_16",
+  "name": "Schema Validation",
+  "category": "data_validation",
+  "difficulty": "medium",
+  "prompt": "Schrijf een Python script dat data schema valideert:\n\n1. Lees 'data.csv' in\n2. Controleer of alle verplichte kolommen aanwezig zijn:\n   - 'id'\n   - 'name'\n   - 'email'\n3. Als één of meer kolommen ontbreken:\n   - Print een foutmelding: 'ERROR: Missing required columns: [kolomnamen]'\n   - Exit het script zonder output.csv te maken\n4. Als alle kolommen aanwezig zijn:\n   - Print: 'SUCCESS: All required columns present'\n   - Sla de data op naar 'validated.csv'\n5. Het script moet een exit code 1 returnen bij fout, 0 bij succes\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
+  "expected_behavior": "Het script valideert of id, name, en email kolommen aanwezig zijn. Bij succes: print success message en slaat op. Bij falen: print error en exit zonder output.",
+  "evaluation_criteria": [
+    "Controleert aanwezigheid van id, name, email kolommen",
+    "Print correcte error message bij ontbrekende kolommen",
+    "Print correcte success message bij aanwezige kolommen",
+    "Maakt validated.csv alleen bij succes",
+    "Gebruikt sys.exit(1) bij fout en sys.exit(0) bij succes",
+    "Script stopt correct bij validatiefout"
+  ],
+  "input_files": ["data.csv"],
+  "output_file": "validated.csv"
+}

@@ -3,7 +3,10 @@
 # List of specific models you want to test. 
 # The tool will only use models from this list that are also available in `ollama list`.
 MODELS_TO_TEST = [
-   'deepseek-coder-v2:latest'
+   'deepseek-coder-v2:latest',
+   'gemma4:latest',
+   'starcoder2:latest',
+   'llama3:latest'
 ]
 
 # Directory for saving generated code outputs

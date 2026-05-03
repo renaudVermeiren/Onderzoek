@@ -1,0 +1,13 @@
+user_id,order_id,product
+1,1001,Laptop
+1,1002,Mouse
+2,2001,Book
+2,2002,Pen
+2,2003,Notebook
+3,3001,Keyboard
+4,4001,Monitor
+5,5001,Headphones
+5,5002,Cable
+5,5003,Adapter
+5,5004,Stand
+6,6001,Chair
