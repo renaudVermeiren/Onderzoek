@@ -24,7 +24,7 @@ def test():
     # Check no nulls in total_spend
     assert df['total_spend'].notna().all(), "No nulls allowed in total_spend"
     
-    print("✅ All tests passed!")
+    print("All tests passed!")
 
 if __name__ == "__main__":
     test()

@@ -28,7 +28,7 @@ def test():
     counts = df['order_count'].tolist()
     assert counts == sorted(counts, reverse=True), "Data should be sorted by order_count descending"
     
-    print("✅ All tests passed!")
+    print("All tests passed!")
 
 if __name__ == "__main__":
     test()

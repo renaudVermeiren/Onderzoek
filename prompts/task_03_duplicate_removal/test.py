@@ -21,7 +21,7 @@ def test():
     user2_rows = df[df['user_id'] == 2]
     assert len(user2_rows) == 2, "Should have 2 rows for user 2 (different orders)"
     
-    print("✅ All tests passed!")
+    print("All tests passed!")
 
 if __name__ == "__main__":
     test()

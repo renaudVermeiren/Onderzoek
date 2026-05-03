@@ -26,7 +26,7 @@ def test():
     assert df.loc[df['id'] == 4, 'date'].iloc[0] == '2024-04-10', "Row 4 date incorrect"
     assert df.loc[df['id'] == 5, 'date'].iloc[0] == '2024-05-30', "Row 5 should be converted from 30/05/2024 to 2024-05-30"
     
-    print("✅ All tests passed!")
+    print("All tests passed!")
 
 if __name__ == "__main__":
     test()

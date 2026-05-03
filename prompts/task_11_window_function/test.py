@@ -30,7 +30,7 @@ def test():
     actual_order = list(zip(df['user_id'].tolist(), df['rank'].tolist()))
     assert actual_order == expected_order, f"Expected order {expected_order}, got {actual_order}"
     
-    print("✅ All tests passed!")
+    print("All tests passed!")
 
 if __name__ == "__main__":
     test()

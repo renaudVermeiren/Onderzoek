@@ -24,7 +24,7 @@ def test():
     # Check number of rows
     assert len(df) == 6, f"Expected 6 rows (value > 1000), got {len(df)}"
     
-    print("✅ All tests passed!")
+    print("All tests passed!")
 
 def check_solution_code():
     """Check if solution uses efficient methods"""
@@ -34,16 +34,16 @@ def check_solution_code():
         
         # Check for inefficient patterns
         if 'iterrows()' in code or 'itertuples()' in code:
-            print("⚠️ Warning: Solution uses row-wise iteration (inefficient)")
+            print(" Warning:Solution uses row-wise iteration (inefficient)")
         
         if 'read_csv' in code and code.count('read_csv') > 1:
-            print("⚠️ Warning: Solution may load data multiple times")
+            print(" Warning:Solution may load data multiple times")
         
         # Check for efficient patterns
         if 'df[' in code and '>' in code:
-            print("✅ Solution appears to use vectorized filtering")
+            print("Solution appears to use vectorized filtering")
         elif '.query(' in code:
-            print("✅ Solution uses query method")
+            print("Solution uses query method")
             
     except FileNotFoundError:
         pass

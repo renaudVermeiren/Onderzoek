@@ -24,7 +24,7 @@ def test():
     actual_users = set(df['user_id'].values)
     assert actual_users == expected_users, f"Expected users {expected_users}, got {actual_users}"
     
-    print("✅ All tests passed!")
+    print("All tests passed!")
 
 if __name__ == "__main__":
     test()

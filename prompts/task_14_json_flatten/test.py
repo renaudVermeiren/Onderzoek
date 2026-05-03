@@ -40,7 +40,7 @@ def test():
     assert alice[city_col].iloc[0] == 'New York', f"Alice city should be 'New York'"
     assert alice[country_col].iloc[0] == 'USA', f"Alice country should be 'USA'"
     
-    print("✅ All tests passed!")
+    print("All tests passed!")
 
 if __name__ == "__main__":
     test()

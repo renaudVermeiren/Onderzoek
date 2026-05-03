@@ -5,8 +5,10 @@
 MODELS_TO_TEST = [
    'deepseek-coder-v2:latest',
    'gemma4:latest',
-   'starcoder2:latest',
-   'llama3:latest'
+  # 'starcoder2:latest',
+   'mistral:latest',
+   'llama3:latest',
+   'qwen2.5-coder:latest'
 ]
 
 # Directory for saving generated code outputs

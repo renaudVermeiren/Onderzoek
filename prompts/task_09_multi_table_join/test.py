@@ -29,7 +29,7 @@ def test():
         actual_price = alice_laptop['total_price'].iloc[0]
         assert actual_price == expected_price, f"Alice Laptop total_price should be {expected_price}, got {actual_price}"
     
-    print("✅ All tests passed!")
+    print("All tests passed!")
 
 if __name__ == "__main__":
     test()

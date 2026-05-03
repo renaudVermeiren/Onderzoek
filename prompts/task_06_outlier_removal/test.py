@@ -33,7 +33,7 @@ def test():
     assert 10 in df['value'].values, "Value 10 should be kept"
     assert 15 in df['value'].values, "Value 15 should be kept"
     
-    print("✅ All tests passed!")
+    print("All tests passed!")
 
 if __name__ == "__main__":
     test()

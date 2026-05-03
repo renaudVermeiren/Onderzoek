@@ -43,7 +43,7 @@ def test():
     # Check Electronics is first (highest total)
     assert df.iloc[0]['category'] == 'Electronics', "Electronics should be first (highest sales)"
     
-    print("✅ All tests passed!")
+    print("All tests passed!")
 
 if __name__ == "__main__":
     test()

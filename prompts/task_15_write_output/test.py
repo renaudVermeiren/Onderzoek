@@ -35,7 +35,7 @@ def test():
     assert 'Bob' not in names, "Bob should not be in output (had null age)"
     assert 'Charlie' not in names, "Charlie should not be in output (had null salary)"
     
-    print("✅ All tests passed!")
+    print("All tests passed!")
 
 if __name__ == "__main__":
     test()

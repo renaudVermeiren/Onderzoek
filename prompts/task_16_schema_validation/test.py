@@ -23,7 +23,7 @@ def test():
     assert list(df.columns) == ['id', 'name', 'email', 'age', 'city'], \
         f"Columns should match input, got {list(df.columns)}"
     
-    print("✅ All tests passed!")
+    print("All tests passed!")
 
 if __name__ == "__main__":
     test()

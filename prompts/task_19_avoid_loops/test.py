@@ -31,7 +31,7 @@ def test():
     for name in names:
         assert name in df['name'].values, f"Name {name} should be unchanged"
     
-    print("✅ All tests passed!")
+    print("All tests passed!")
 
 def check_solution_code():
     """Check if solution avoids row-wise loops"""
@@ -48,9 +48,9 @@ def check_solution_code():
                 found_forbidden.append(pattern)
         
         if found_forbidden:
-            print(f"⚠️ Warning: Solution uses row-wise iteration: {found_forbidden}")
+            print(f" Warning:Solution uses row-wise iteration: {found_forbidden}")
         else:
-            print("✅ Solution appears to avoid row-wise loops")
+            print("Solution appears to avoid row-wise loops")
             
     except FileNotFoundError:
         pass

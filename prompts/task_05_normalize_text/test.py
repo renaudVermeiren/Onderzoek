@@ -37,7 +37,7 @@ def test():
     assert len(charlie_row) == 1, "Charlie row should exist"
     assert charlie_row['email'].iloc[0] == 'charlie@test.org', "Charlie email incorrect"
     
-    print("✅ All tests passed!")
+    print("All tests passed!")
 
 if __name__ == "__main__":
     test()

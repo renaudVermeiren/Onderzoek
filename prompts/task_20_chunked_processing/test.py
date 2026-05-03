@@ -24,7 +24,7 @@ def test():
     # Check number of rows
     assert len(df) == 5, f"Expected 5 rows (value > 500), got {len(df)}"
     
-    print("✅ All tests passed!")
+    print("All tests passed!")
 
 def check_solution_code():
     """Check if solution uses chunked processing"""
@@ -34,15 +34,15 @@ def check_solution_code():
         
         # Check for chunked processing patterns
         if 'chunksize' in code:
-            print("✅ Solution uses chunksize parameter")
+            print("Solution uses chunksize parameter")
         else:
-            print("⚠️ Warning: Solution may not use chunked processing")
+            print(" Warning:Solution may not use chunked processing")
         
         if 'for' in code and 'chunk' in code.lower():
-            print("✅ Solution iterates over chunks")
+            print("Solution iterates over chunks")
         
         if 'concat' in code.lower() or 'append' in code.lower():
-            print("✅ Solution combines chunks")
+            print("Solution combines chunks")
             
     except FileNotFoundError:
         pass

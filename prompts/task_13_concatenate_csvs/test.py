@@ -32,7 +32,7 @@ def test():
     assert len(mar_data) == 1, "Should have 2024-03-25 data"
     assert mar_data['revenue'].iloc[0] == 2800, "Mar 25 revenue should be 2800"
     
-    print("✅ All tests passed!")
+    print("All tests passed!")
 
 if __name__ == "__main__":
     test()

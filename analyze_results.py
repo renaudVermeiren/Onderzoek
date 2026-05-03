@@ -36,9 +36,9 @@ MODEL_COLORS = {
     'deepseek-coder-v2_latest': '#e74c3c',  # Red
     'gemma4_latest': '#3498db',              # Blue  
     'llama3_latest': '#2ecc71',              # Green
-    'starcoder2_latest': '#f39c12',          # Orange
-    'codellama': '#9b59b6',                  # Purple
-    'mistral': '#1abc9c',                    # Teal
+    'mistral_latest': '#f39c12',             # Orange
+    'qwen2.5-coder_latest': '#9b59b6',       # Purple
+    'codellama': '#1abc9c',                  # Teal
 }
 
 # Evaluator colors
@@ -237,12 +237,11 @@ def create_maintainability_bars(data, output_dir):
     print("✅ Created: 03_maintainability.png")
 
 
-def create_lines_of_code_bars(data, output_dir):
-    """Chart 4: Bar chart comparing average lines of code per model."""
+def create_lines_of_code_boxplot(data, output_dir):
+    """Chart 4: Boxplot comparing lines of code distribution per model."""
     fig, ax = plt.subplots(figsize=(12, 7))
     
-    models = []
-    avg_loc = []
+    model_locs = {}
     
     for model_name, model_info in data["models"].items():
         locs = []
@@ -252,26 +251,29 @@ def create_lines_of_code_bars(data, output_dir):
                 locs.append(loc)
         
         if locs:
-            models.append(model_name)
-            avg_loc.append(np.mean(locs))
+            model_locs[model_name] = locs
     
-    x = np.arange(len(models))
-    bars = ax.bar(x, avg_loc, color=[get_model_color(m) for m in models],
-                  edgecolor='black', linewidth=1)
+    if model_locs:
+        # Create boxplot
+        bp = ax.boxplot(model_locs.values(), tick_labels=model_locs.keys(),
+                        patch_artist=True, showmeans=True, meanline=True)
+        
+        # Color the boxes
+        for patch, model in zip(bp['boxes'], model_locs.keys()):
+            patch.set_facecolor(get_model_color(model))
+            patch.set_alpha(0.7)
+        
+        # Color the mean lines
+        for mean_line in bp['means']:
+            mean_line.set_color('red')
+            mean_line.set_linewidth(2)
     
     ax.set_xlabel('Model', fontweight='bold')
-    ax.set_ylabel('Average Lines of Code', fontweight='bold')
-    ax.set_title('Code Size Comparison by Model\n(Lower is often better)', 
+    ax.set_ylabel('Lines of Code', fontweight='bold')
+    ax.set_title('Lines of Code Distribution by Model\n(Red line = mean, box = quartiles, lower is often better)',
                  fontweight='bold', pad=20)
-    ax.set_xticks(x)
-    ax.set_xticklabels(models, rotation=45, ha='right')
     ax.grid(axis='y', alpha=0.3)
-    
-    # Add value labels
-    for bar in bars:
-        height = bar.get_height()
-        ax.text(bar.get_x() + bar.get_width()/2., height,
-                f'{int(height)}', ha='center', va='bottom', fontweight='bold')
+    plt.xticks(rotation=45, ha='right')
     
     plt.tight_layout()
     plt.savefig(output_dir / '04_lines_of_code.png', bbox_inches='tight')
@@ -462,7 +464,7 @@ def main():
     create_evaluator_comparison_bars(data, output_dir)
     create_task_success_bars(data, output_dir)
     create_maintainability_bars(data, output_dir)
-    create_lines_of_code_bars(data, output_dir)
+    create_lines_of_code_boxplot(data, output_dir)
     create_execution_time_boxplot(data, output_dir)
     create_security_issues_bars(data, output_dir)
     create_model_ranking_bars(data, output_dir)

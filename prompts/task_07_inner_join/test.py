@@ -20,7 +20,7 @@ def test():
     assert 'name' in df.columns, "Name column from users should exist"
     assert 'amount' in df.columns, "Amount column from orders should exist"
     
-    print("✅ All tests passed!")
+    print("All tests passed!")
 
 if __name__ == "__main__":
     test()

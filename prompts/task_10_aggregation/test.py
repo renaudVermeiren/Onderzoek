@@ -25,7 +25,7 @@ def test():
     totals = df['total_spend'].tolist()
     assert totals == sorted(totals, reverse=True), "Data should be sorted by total_spend descending"
     
-    print("✅ All tests passed!")
+    print("All tests passed!")
 
 if __name__ == "__main__":
     test()
