@@ -70,8 +70,10 @@ def run_quality_evaluation(task_folder: Path, model_name: str, task_id: str) -> 
     
     for eval_name, evaluator in evaluators:
         try:
+            # Use absolute path to avoid path doubling issues
+            script_path = (task_folder / "generated_script.py").resolve()
             result = evaluator.evaluate(
-                file_path=str(task_folder / "generated_script.py"),
+                file_path=str(script_path),
                 code_content=code_content,
                 metadata=metadata
             )
@@ -169,9 +171,12 @@ def evaluate_all_tasks():
             task_id = task_folder.name
             print(f"  [{task_idx}/{len(task_folders)}] Evaluating {task_id}...")
             
+            # Use absolute path for task folder
+            task_folder_abs = task_folder.resolve()
+            
             task_result = {
                 "task_id": task_id,
-                "task_folder": str(task_folder),
+                "task_folder": str(task_folder_abs),
                 "quality": {},
                 "functional": {},
                 "overall_passed": False
@@ -179,7 +184,7 @@ def evaluate_all_tasks():
             
             # Run quality evaluations
             print(f"      Running quality checks...", end=" ")
-            quality_result = run_quality_evaluation(task_folder, model_name, task_id)
+            quality_result = run_quality_evaluation(task_folder_abs, model_name, task_id)
             
             if quality_result["error"]:
                 print(f"❌ ERROR: {quality_result['error']}")
@@ -193,7 +198,7 @@ def evaluate_all_tasks():
             
             # Run functional test
             print(f"      Running functional test...", end=" ")
-            func_result = func_evaluator.run_task_test(task_folder)
+            func_result = func_evaluator.run_task_test(task_folder_abs)
             
             task_result["functional"] = {
                 "test_ran": func_result["test_ran"],
