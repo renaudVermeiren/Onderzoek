@@ -3,7 +3,7 @@
   "name": "Read Multiple CSVs and Concatenate",
   "category": "data_loading",
   "difficulty": "easy",
-  "prompt": "Schrijf een Python script dat meerdere CSV bestanden combineert:\n\n1. Lees de volgende CSV bestanden in:\n   - 'monthly_2024_01.csv'\n   - 'monthly_2024_02.csv'\n   - 'monthly_2024_03.csv'\n2. Concateneer (combineer) alle DataFrames tot één DataFrame\n3. Reset de index zodat deze oploopt van 0 tot N\n4. Sla het gecombineerde resultaat op naar 'combined.csv'\n5. Output moet alle rijen bevatten uit alle 3 bestanden\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
+  "prompt": "Schrijf een Python script dat meerdere CSV bestanden combineert:\n\n1. Lees de volgende CSV bestanden in:\n   - 'monthly_2024_01.csv'\n   - 'monthly_2024_02.csv'\n   - 'monthly_2024_03.csv'\n2. Concateneer (combineer) alle DataFrames tot één DataFrame\n3. Reset de index zodat deze oploopt van 0 tot N\n4. Sla het gecombineerde resultaat op naar 'combined.csv'\n5. Output moet alle rijen bevatten uit alle 3 bestanden\n\nHet script moet de bestaande input bestanden lezen die al in dezelfde map staan. Maak GEEN dummy data aan.\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
   "expected_behavior": "Het script leest 3 maandelijkse CSV bestanden, concateneert ze tot één DataFrame, en slaat op als combined.csv met alle 9 rijen.",
   "evaluation_criteria": [
     "Alle 3 input CSV bestanden worden gelezen",
@@ -13,6 +13,10 @@
     "Output kolommen: id, date, revenue, expenses",
     "Script schrijft naar combined.csv"
   ],
-  "input_files": ["monthly_2024_01.csv", "monthly_2024_02.csv", "monthly_2024_03.csv"],
+  "input_files": [
+    "monthly_2024_01.csv",
+    "monthly_2024_02.csv",
+    "monthly_2024_03.csv"
+  ],
   "output_file": "combined.csv"
 }

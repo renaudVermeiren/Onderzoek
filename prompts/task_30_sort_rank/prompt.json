@@ -1,0 +1,19 @@
+{
+  "id": "task_30",
+  "name": "Sorting and Ranking",
+  "category": "data_transformation",
+  "difficulty": "easy",
+  "prompt": "Schrijf een Python script dat data sorteert en rangschikt:\n\n1. Lees 'students.csv' in\n2. Sorteer eerst op 'grade' aflopend (hoogste eerst), dan op 'age' oplopend (jongste eerst)\n3. Voeg een 'rank' kolom toe (1 = hoogst gerangschikt)\n4. Sla het resultaat op naar 'ranked.csv'\n\nHet script moet de bestaande input bestanden lezen die al in dezelfde map staan. Maak GEEN dummy data aan.\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
+  "expected_behavior": "Het script sorteert studenten op grade (desc) en age (asc), voegt rank kolom toe, en slaat op als ranked.csv.",
+  "evaluation_criteria": [
+    "Data is gesorteerd op grade aflopend",
+    "Bij gelijke grades: gesorteerd op age oplopend",
+    "Rank kolom is toegevoegd (start bij 1)",
+    "Alice rank=1 (hoogste grade, jongste bij gelijke grades)",
+    "Charlie rank=2 (zelfde grade als Alice, maar ouder)",
+    "Diana rank=3",
+    "Script leest van students.csv en schrijft naar ranked.csv"
+  ],
+  "input_files": ["students.csv"],
+  "output_file": "ranked.csv"
+}

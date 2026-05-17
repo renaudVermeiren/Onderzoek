@@ -1,0 +1,7 @@
+id,customer_email,amount,status
+1,john@example.com,150.00,completed
+2,invalid-email,200.00,pending
+3,jane@example.com,-50.00,completed
+4,bob@example.com,300.00,unknown
+5,alice@example.com,450.00,completed
+6,charlie@example.com,100.00,pending

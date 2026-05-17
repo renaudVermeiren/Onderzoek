@@ -3,7 +3,7 @@
   "name": "Inner Join Users and Orders",
   "category": "joins",
   "difficulty": "easy",
-  "prompt": "Schrijf een Python script dat twee CSV bestanden joined:\n\n1. Lees 'users.csv' en 'orders.csv' in\n2. Voer een INNER JOIN uit op 'user_id'\n3. Behoud alleen gebruikers die minstens 1 order hebben\n4. Het resultaat bevat kolommen van beide tabellen\n5. Sla het resultaat op naar 'output.csv'\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
+  "prompt": "Schrijf een Python script dat twee CSV bestanden joined:\n\n1. Lees 'users.csv' en 'orders.csv' in\n2. Voer een INNER JOIN uit op 'user_id'\n3. Behoud alleen gebruikers die minstens 1 order hebben\n4. Het resultaat bevat kolommen van beide tabellen\n5. Sla het resultaat op naar 'output.csv'\n\nHet script moet de bestaande input bestanden lezen die al in dezelfde map staan. Maak GEEN dummy data aan.\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
   "expected_behavior": "Het script voert een inner join uit en behoudt alleen users met orders (Alice en Bob, niet Charlie).",
   "evaluation_criteria": [
     "Inner join correct uitgevoerd op user_id",
@@ -13,6 +13,9 @@
     "Script leest beide input files en schrijft naar output.csv",
     "Gebruikt pandas merge of join functie"
   ],
-  "input_files": ["users.csv", "orders.csv"],
+  "input_files": [
+    "users.csv",
+    "orders.csv"
+  ],
   "output_file": "output.csv"
 }

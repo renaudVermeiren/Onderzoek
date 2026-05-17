@@ -1,0 +1,19 @@
+{
+  "id": "task_27",
+  "name": "Custom Data Validation",
+  "category": "data_validation",
+  "difficulty": "medium",
+  "prompt": "Schrijf een Python script dat data valideert met custom regels:\n\n1. Lees 'orders.csv' in\n2. Valideer ELKE rij met deze regels:\n   - email moet een geldig formaat hebben (bevat @ en .)\n   - amount moet positief zijn (> 0)\n   - status moet 'completed' of 'pending' zijn\n3. Splits de data:\n   - Valide rijen -> 'valid_orders.csv'\n   - Invalide rijen -> 'invalid_orders.csv'\n4. Voeg een kolom 'validation_error' toe aan invalid_orders met de reden\n\nHet script moet de bestaande input bestanden lezen die al in dezelfde map staan. Maak GEEN dummy data aan.\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
+  "expected_behavior": "Het script valideert orders op email formaat, positieve amounts, en geldige status. Splits in valide (4 rijen) en invalide (2 rijen) bestanden.",
+  "evaluation_criteria": [
+    "valid_orders.csv bevat 4 rijen",
+    "invalid_orders.csv bevat 2 rijen",
+    "invalid_orders heeft 'validation_error' kolom",
+    "Order 2 (invalid email) is in invalid_orders",
+    "Order 3 (negatief bedrag) is in invalid_orders",
+    "Order 4 (onbekende status) is in invalid_orders",
+    "Script leest van orders.csv"
+  ],
+  "input_files": ["orders.csv"],
+  "output_file": "valid_orders.csv"
+}

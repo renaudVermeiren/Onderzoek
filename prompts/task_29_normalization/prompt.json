@@ -1,0 +1,17 @@
+{
+  "id": "task_29",
+  "name": "Data Normalization (Min-Max Scaling)",
+  "category": "data_transformation",
+  "difficulty": "medium",
+  "prompt": "Schrijf een Python script dat min-max normalisatie toepast:\n\n1. Lees 'scores.csv' in\n2. Pas min-max normalisatie toe op ALLE score kolommen:\n   - math_score, science_score, english_score\n   - Formule: (value - min) / (max - min)\n   - Resultaat moet tussen 0 en 1 liggen\n3. Behoud de 'id' en 'student' kolommen ongewijzigd\n4. Sla het resultaat op naar 'normalized.csv'\n\nHet script moet de bestaande input bestanden lezen die al in dezelfde map staan. Maak GEEN dummy data aan.\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
+  "expected_behavior": "Het script normaliseert alle score kolommen naar 0-1 range met min-max scaling, behoudt id en student kolommen.",
+  "evaluation_criteria": [
+    "Alle score waarden liggen tussen 0 en 1",
+    "id en student kolommen zijn ongewijzigd",
+    "Min-max formule is correct toegepast",
+    "Alle 5 studenten zijn aanwezig",
+    "Script leest van scores.csv en schrijft naar normalized.csv"
+  ],
+  "input_files": ["scores.csv"],
+  "output_file": "normalized.csv"
+}

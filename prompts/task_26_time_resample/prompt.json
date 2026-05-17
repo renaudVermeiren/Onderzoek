@@ -1,0 +1,17 @@
+{
+  "id": "task_26",
+  "name": "Time Series Resampling",
+  "category": "time_series",
+  "difficulty": "medium",
+  "prompt": "Schrijf een Python script dat tijdreeks data resampled naar uurlijkse gemiddelden:\n\n1. Lees 'sensor_data.csv' in\n2. Converteer de 'timestamp' kolom naar datetime formaat\n3. Resample de data naar uurlijkse intervallen (1H)\n4. Bereken het gemiddelde van 'value' per uur\n5. Sla het resultaat op naar 'hourly_avg.csv'\n\nHet script moet de bestaande input bestanden lezen die al in dezelfde map staan. Maak GEEN dummy data aan.\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
+  "expected_behavior": "Het script converteert timestamps naar datetime, resampled naar uurlijkse buckets, en berekent gemiddelde waarden per uur.",
+  "evaluation_criteria": [
+    "Timestamp kolom is datetime formaat",
+    "Data is gegroepeerd per uur",
+    "Gemiddelde value per uur is berekend",
+    "Output bevat timestamps en gemiddelde waarden",
+    "Script leest van sensor_data.csv en schrijft naar hourly_avg.csv"
+  ],
+  "input_files": ["sensor_data.csv"],
+  "output_file": "hourly_avg.csv"
+}

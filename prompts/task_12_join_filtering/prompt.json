@@ -3,7 +3,7 @@
   "name": "Join with Filtering",
   "category": "joins",
   "difficulty": "medium",
-  "prompt": "Schrijf een Python script dat alleen gebruikers met meerdere orders toont:\n\n1. Lees 'users.csv' en 'orders.csv' in\n2. Join beide DataFrames op 'user_id'\n3. Groepeer per user_id en tel het aantal orders\n4. Filter om alleen gebruikers met MEER DAN 1 order te behouden\n5. Output kolommen: user_id, name, order_count\n6. Sorteer op order_count aflopend\n7. Sla het resultaat op naar 'output.csv'\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
+  "prompt": "Schrijf een Python script dat alleen gebruikers met meerdere orders toont:\n\n1. Lees 'users.csv' en 'orders.csv' in\n2. Join beide DataFrames op 'user_id'\n3. Groepeer per user_id en tel het aantal orders\n4. Filter om alleen gebruikers met MEER DAN 1 order te behouden\n5. Output kolommen: user_id, name, order_count\n6. Sorteer op order_count aflopend\n7. Sla het resultaat op naar 'output.csv'\n\nHet script moet de bestaande input bestanden lezen die al in dezelfde map staan. Maak GEEN dummy data aan.\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
   "expected_behavior": "Het script joined users en orders, filtert op users met >1 order, en output user_id, name, order_count. Alleen Alice (3 orders) en Bob (2 orders) moeten in output staan.",
   "evaluation_criteria": [
     "Correcte join op user_id",
@@ -14,6 +14,9 @@
     "Charlie (1 order) niet in output",
     "Data gesorteerd op order_count aflopend"
   ],
-  "input_files": ["users.csv", "orders.csv"],
+  "input_files": [
+    "users.csv",
+    "orders.csv"
+  ],
   "output_file": "output.csv"
 }

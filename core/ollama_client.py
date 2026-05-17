@@ -3,7 +3,7 @@ import requests
 import subprocess
 import json
 import sys
-from config import TIMEOUT_SECONDS
+from config import TIMEOUT_SECONDS, LLM_TEMPERATURE, LLM_SEED
 
 OLLAMA_API_BASE = "http://localhost:11434"
 
@@ -83,7 +83,11 @@ def send_prompt_to_model(model_name, prompt_content, timeout=TIMEOUT_SECONDS):
     payload = {
         "model": model_name,
         "messages": [{"role": "user", "content": prompt_content}],
-        "stream": False
+        "stream": False,
+        "options": {
+            "temperature": LLM_TEMPERATURE,
+            "seed": LLM_SEED
+        }
     }
     
     try:
@@ -102,7 +106,7 @@ def send_prompt_to_model(model_name, prompt_content, timeout=TIMEOUT_SECONDS):
 def extract_code_from_response(response_json):
     """
     Extract generated code from Ollama response.
-    Removes markdown code block markers if present.
+    Removes markdown code block markers and any trailing text.
     
     Args:
         response_json: The JSON response from Ollama
@@ -114,17 +118,18 @@ def extract_code_from_response(response_json):
         content = response_json["message"]["content"]
         content = content.strip()
         
-        # Remove markdown code block markers
-        # Handle ```python, ```py, or just ``` at the start
+        # Remove opening code block marker (```python, ```py, or just ```)
         if content.startswith("```"):
             # Find the first newline after the opening ```
             first_newline = content.find("\n")
             if first_newline != -1:
                 content = content[first_newline:].strip()
         
-        # Remove trailing ``` if present
-        if content.endswith("```"):
-            content = content[:-3].strip()
+        # Find and remove the closing ``` and everything after it
+        # This handles cases where there's text after the code block
+        closing_marker = content.rfind("```")
+        if closing_marker != -1:
+            content = content[:closing_marker].strip()
         
         return content
     except KeyError as e:

@@ -22,3 +22,9 @@ RESULTS_DIR = "results"
 
 # Timeout for LLM requests (in seconds)
 TIMEOUT_SECONDS = 120
+
+# Reproducibility settings for LLM generation
+# Temperature: 0.0 = deterministic, higher = more creative
+LLM_TEMPERATURE = 0.0
+# Seed: fixed value for reproducible outputs across runs
+LLM_SEED = 42

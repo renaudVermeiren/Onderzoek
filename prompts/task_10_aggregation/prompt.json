@@ -3,7 +3,7 @@
   "name": "Aggregation after Join",
   "category": "joins",
   "difficulty": "medium",
-  "prompt": "Schrijf een Python script dat gebruikersdata en orders samenvoegt en aggregeert:\n\n1. Lees 'users.csv' en 'orders.csv' in\n2. Join beide DataFrames op 'user_id'\n3. Bereken de totale uitgaven per gebruiker (sum van 'amount')\n4. Output kolommen: user_id, name, total_spend\n5. Sorteer op total_spend aflopend (hoogste eerst)\n6. Sla het resultaat op naar 'output.csv'\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
+  "prompt": "Schrijf een Python script dat gebruikersdata en orders samenvoegt en aggregeert:\n\n1. Lees 'users.csv' en 'orders.csv' in\n2. Join beide DataFrames op 'user_id'\n3. Bereken de totale uitgaven per gebruiker (sum van 'amount')\n4. Output kolommen: user_id, name, total_spend\n5. Sorteer op total_spend aflopend (hoogste eerst)\n6. Sla het resultaat op naar 'output.csv'\n\nHet script moet de bestaande input bestanden lezen die al in dezelfde map staan. Maak GEEN dummy data aan.\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
   "expected_behavior": "Het script joined users en orders, berekent total_spend per gebruiker met groupby, en output user_id, name, total_sorted gesorteerd op total_spend.",
   "evaluation_criteria": [
     "Correcte join op user_id",
@@ -13,6 +13,9 @@
     "Correcte total_spend waarden: Alice=350, Bob=250, Charlie=400",
     "Script leest van input files en schrijft naar output.csv"
   ],
-  "input_files": ["users.csv", "orders.csv"],
+  "input_files": [
+    "users.csv",
+    "orders.csv"
+  ],
   "output_file": "output.csv"
 }

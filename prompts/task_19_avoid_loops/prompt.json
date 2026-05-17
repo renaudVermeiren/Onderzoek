@@ -3,7 +3,7 @@
   "name": "Avoid Row-wise Loops",
   "category": "performance",
   "difficulty": "medium",
-  "prompt": "Schrijf een Python script dat data transformeert zonder row-wise loops:\n\n1. Lees 'data.csv' in\n2. Transformeer de 'value' kolom: vermenigvuldig elke waarde met 2\n3. BELANGRIJK: Gebruik ABSOLUUT GEEN for-loop over DataFrame rows\n   - Geen iterrows()\n   - Geen itertuples()\n   - Geen apply() met axis=1 (dit is ook row-wise)\n4. Gebruik vectorized operaties (bijv. df['value'] * 2)\n5. Sla het resultaat op naar 'transformed.csv'\n\nDit is een prestatie taak om vectorized operaties te testen.\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
+  "prompt": "Schrijf een Python script dat data transformeert zonder row-wise loops:\n\n1. Lees 'data.csv' in\n2. Transformeer de 'value' kolom: vermenigvuldig elke waarde met 2\n3. BELANGRIJK: Gebruik ABSOLUUT GEEN for-loop over DataFrame rows\n   - Geen iterrows()\n   - Geen itertuples()\n   - Geen apply() met axis=1 (dit is ook row-wise)\n4. Gebruik vectorized operaties (bijv. df['value'] * 2)\n5. Sla het resultaat op naar 'transformed.csv'\n\nDit is een prestatie taak om vectorized operaties te testen.\n\nHet script moet de bestaande input bestanden lezen die al in dezelfde map staan. Maak GEEN dummy data aan.\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
   "expected_behavior": "Het script transformeert de value kolom door elk element te vermenigvuldigen met 2, gebruik makend van vectorized operaties zonder row-wise loops.",
   "evaluation_criteria": [
     "Alle waarden in value kolom zijn verdubbeld",
@@ -13,6 +13,8 @@
     "Andere kolommen blijven ongewijzigd",
     "Script schrijft naar transformed.csv"
   ],
-  "input_files": ["data.csv"],
+  "input_files": [
+    "data.csv"
+  ],
   "output_file": "transformed.csv"
 }

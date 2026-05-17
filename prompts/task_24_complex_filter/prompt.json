@@ -1,0 +1,19 @@
+{
+  "id": "task_24",
+  "name": "Complex Multi-Condition Filtering",
+  "category": "data_filtering",
+  "difficulty": "medium",
+  "prompt": "Schrijf een Python script dat data filtert met complexe voorwaarden:\n\n1. Lees 'employees.csv' in\n2. Filter rijen die aan ÉÉN van deze voorwaarden voldoen:\n   - (leeftijd > 30 AND afdeling == 'IT') OR\n   - (salaris > 5000 AND ervaring > 5 jaar)\n3. BELANGRIJK: Dit moet in ÉÉN filter stap, niet met meerdere aparte filters\n4. Sla het gefilterde resultaat op naar 'filtered_complex.csv'\n\nHet script moet de bestaande input bestanden lezen die al in dezelfde map staan. Maak GEEN dummy data aan.\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
+  "expected_behavior": "Het script filtert werknemers die ofwel IT medewerkers >30 zijn, ofwel >5000 verdienen met >5 jaar ervaring. Output bevat 4 rijen.",
+  "evaluation_criteria": [
+    "Correct gebruik van AND/OR logica in één filter",
+    "Output bevat exact 4 rijen",
+    "John Smith (IT, 35) is aanwezig",
+    "Mike Brown (IT, 42) is aanwezig",
+    "Chris Wilson (IT, 45) is aanwezig",
+    "David Martinez (Sales, 5100, 7j) is aanwezig",
+    "Script leest van employees.csv en schrijft naar filtered_complex.csv"
+  ],
+  "input_files": ["employees.csv"],
+  "output_file": "filtered_complex.csv"
+}

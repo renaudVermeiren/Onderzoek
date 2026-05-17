@@ -1,0 +1,17 @@
+{
+  "id": "task_23",
+  "name": "Create Pivot Table",
+  "category": "data_transformation",
+  "difficulty": "medium",
+  "prompt": "Schrijf een Python script dat een pivot table maakt:\n\n1. Lees 'sales_data.csv' in\n2. Maak een pivot table met:\n   - Rijen (index): 'product'\n   - Kolommen: 'region'\n   - Waarden: sum van 'amount'\n3. Vul ontbrekende waarden op met 0\n4. Sla het resultaat op naar 'pivot_output.csv'\n\nHet script moet de bestaande input bestanden lezen die al in dezelfde map staan. Maak GEEN dummy data aan.\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
+  "expected_behavior": "Het script leest sales data en maakt een pivot table met producten als rijen, regio's als kolommen, en de som van verkopen als waarden.",
+  "evaluation_criteria": [
+    "Pivot table heeft producten als rijen",
+    "Pivot table heeft regio's als kolommen",
+    "Waarden zijn de som van amount",
+    "Ontbrekende waarden zijn 0",
+    "Script leest van sales_data.csv en schrijft naar pivot_output.csv"
+  ],
+  "input_files": ["sales_data.csv"],
+  "output_file": "pivot_output.csv"
+}

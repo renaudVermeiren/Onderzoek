@@ -7,8 +7,9 @@ Dit project genereert Python code door prompts uit te voeren op lokale LLM (Larg
 Dit systeem:
 1. **Genereert code** door prompts uit te voeren op meerdere LLM modellen (via Ollama)
 2. **Slaat code op** in een gestructureerde folder hiërarchie
-3. **Evalueert code** op vijf kwaliteitsaspecten:
+3. **Evalueert code** op zes kwaliteitsaspecten:
    - **Syntax** - Controleert of de code geldige Python syntax heeft
+   - **Style** - Detecteert semantische fouten en stijlproblemen met Ruff
    - **Security** - Detecteert beveiligingsproblemen met Bandit
    - **Execution** - Controleert of de code succesvol uitgevoerd kan worden
    - **Performance** - Meet CPU en memory gebruik tijdens executie met psutil
@@ -57,7 +58,7 @@ python -m venv .venv
 source .venv/bin/activate
 
 # Installeer benodigde packages
-pip install requests bandit psutil radon
+pip install requests bandit psutil radon ruff
 ```
 
 ### Stap 3: LLM Modellen Downloaden
@@ -93,9 +94,9 @@ ollama list
 ├── prompts/loader.py            # Prompt loading functionaliteit
 ├── core/                        # Kern functionaliteit
 │   ├── ollama_client.py        # Ollama API client
-│   ├── evaluation_runner.py    # Evaluatie orchestrator
 │   └── evaluators/             # Evaluator modules
 │       ├── syntax_evaluator.py      # Syntax checking (AST)
+│       ├── style_evaluator.py       # Style & semantics checking (Ruff)
 │       ├── security_evaluator.py    # Security analysis (Bandit)
 │       ├── execution_evaluator.py   # Code execution testing
 │       ├── performance_evaluator.py # Performance analysis (psutil)
@@ -190,6 +191,7 @@ python evaluate.py
 1. Zoekt alle Python files in `generated_code/`
 2. Voert alle geregistreerde evaluatoren uit:
    - **SyntaxEvaluator**: Checkt Python syntax met AST parser
+   - **StyleEvaluator**: Detecteert semantische fouten en stijlproblemen met Ruff
    - **SecurityEvaluator**: Analyseert security met Bandit
    - **ExecutionEvaluator**: Controleert of code uitgevoerd kan worden
    - **PerformanceEvaluator**: Meet CPU/memory met psutil
@@ -304,6 +306,21 @@ results/run_20260502_143530/
   - MI < 20: score 0.2 (very poor)
   - Hoge complexiteit (>10) verlaagt score
 - **Installatie**: `pip install radon`
+
+### 6. Style Evaluator (Ruff)
+- **Doel**: Detecteert semantische fouten en stijlproblemen die AST parsing alleen mist
+- **Methode**: Ruff linter met E, W, F regels (pycodestyle + Pyflakes)
+- **Detecteert**:
+  - Ongedefinieerde variabelen en imports (F-rules)
+  - Ongebruikte imports en variabelen (F-rules)
+  - Syntax-gerelateerde fouten (E9-rules)
+  - Stijlproblemen (E-rules, W-rules)
+- **Score**: Gebaseerd op aantal fouten vs waarschuwingen
+  - Geen fouten/waarschuwingen: score 1.0 (excellent)
+  - Alleen waarschuwingen: score verlaagd met 0.05 per waarschuwing
+  - Fouten aanwezig: score verlaagd met 0.15 per fout
+  - **PASS**: Alleen als er geen semantische fouten (F-rules) zijn
+- **Installatie**: `pip install ruff`
 
 ## Prompts Beheren
 
@@ -444,13 +461,13 @@ ollama pull <model_name>
 ollama list
 ```
 
-### Bandit, psutil, of radon Niet Geïnstalleerd
+### Bandit, psutil, radon, of ruff Niet Geïnstalleerd
 
-**Probleem**: "Bandit is not installed", "psutil is not installed", of "Radon is not installed"
+**Probleem**: "Bandit is not installed", "psutil is not installed", "Radon is not installed", of "Ruff is not installed"
 
 **Oplossing**:
 ```bash
-pip install bandit psutil radon
+pip install bandit psutil radon ruff
 ```
 
 ### Timeout Bij Code Generatie

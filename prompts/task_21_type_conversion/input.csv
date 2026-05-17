@@ -1,0 +1,6 @@
+id,product_name,price,quantity,order_date
+1,Laptop,"1299.99","2","2024-01-15"
+2,Mouse,"25.50","10","2024-02-20"
+3,Keyboard,"79.99","5","2024-03-10"
+4,Monitor,"349.00","3","2024-01-25"
+5,Headphones,"149.99","8","2024-04-05"

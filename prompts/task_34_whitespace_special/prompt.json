@@ -1,0 +1,17 @@
+{
+  "id": "task_34",
+  "name": "Remove Whitespace and Special Characters",
+  "category": "data_cleaning",
+  "difficulty": "easy",
+  "prompt": "Schrijf een Python script dat whitespace en speciale tekens opschoont:\n\n1. Lees 'input.csv' in\n2. Verwijder ALLE leading/trailing whitespace van ALLE tekstkolommen\n3. Vervang tabs (\\t) door spaties in alle tekstkolommen\n4. Verwijder speciale tekens (@#$%) uit de 'description' kolom\n5. Sla het resultaat op naar 'cleaned.csv'\n\nHet script moet de bestaande input bestanden lezen die al in dezelfde map staan. Maak GEEN dummy data aan.\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
+  "expected_behavior": "Het script verwijderd alle whitespace, tabs en speciale tekens uit tekstkolommen.",
+  "evaluation_criteria": [
+    "Geen leading/trailing whitespace in tekstkolommen",
+    "Geen tabs meer in de data",
+    "Speciale tekens (@#$%) zijn verwijderd uit description",
+    "Alle 5 rijen zijn behouden",
+    "Script leest van input.csv en schrijft naar cleaned.csv"
+  ],
+  "input_files": ["input.csv"],
+  "output_file": "cleaned.csv"
+}

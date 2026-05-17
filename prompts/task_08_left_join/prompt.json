@@ -3,7 +3,7 @@
   "name": "Left Join with Missing Handling",
   "category": "joins",
   "difficulty": "medium",
-  "prompt": "Schrijf een Python script dat een left join uitvoert met missing value handling:\n\n1. Lees 'users.csv' en 'orders.csv' in\n2. Voer een LEFT JOIN uit (alle users, ook zonder orders)\n3. Vul ontbrekende order waarden in met 0\n4. Bereken total_spend per user (sum van amounts, 0 als geen orders)\n5. Sla het resultaat op naar 'output.csv' met kolommen: user_id, name, total_spend\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
+  "prompt": "Schrijf een Python script dat een left join uitvoert met missing value handling:\n\n1. Lees 'users.csv' en 'orders.csv' in\n2. Voer een LEFT JOIN uit (alle users, ook zonder orders)\n3. Vul ontbrekende order waarden in met 0\n4. Bereken total_spend per user (sum van amounts, 0 als geen orders)\n5. Sla het resultaat op naar 'output.csv' met kolommen: user_id, name, total_spend\n\nHet script moet de bestaande input bestanden lezen die al in dezelfde map staan. Maak GEEN dummy data aan.\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
   "expected_behavior": "Left join behoudt alle users, missing orders worden 0, total_spend berekend per user.",
   "evaluation_criteria": [
     "Left join correct uitgevoerd (alle 3 users aanwezig)",
@@ -13,6 +13,9 @@
     "Geen null waarden in total_spend",
     "Script leest beide input files en schrijft naar output.csv"
   ],
-  "input_files": ["users.csv", "orders.csv"],
+  "input_files": [
+    "users.csv",
+    "orders.csv"
+  ],
   "output_file": "output.csv"
 }

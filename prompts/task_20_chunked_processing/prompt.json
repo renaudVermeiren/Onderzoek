@@ -3,7 +3,7 @@
   "name": "Chunked File Processing",
   "category": "performance",
   "difficulty": "hard",
-  "prompt": "Schrijf een Python script dat een groot CSV bestand in chunks verwerkt:\n\n1. Lees 'huge_file.csv' in chunks met pd.read_csv(..., chunksize=3)\n2. Voor ELK chunk:\n   - Filter de rijen waar 'value' > 500\n   - Sla de gefilterde rijen op in een lijst\n3. Combineer alle gefilterde chunks tot één DataFrame\n4. Sla het resultaat op naar 'processed.csv'\n5. Print het totale aantal verwerkte chunks en gefilterde rijen\n\nDit is een geheugen-efficientie taak. De data moet in stukken worden verwerkt, niet in één keer in geheugen.\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
+  "prompt": "Schrijf een Python script dat een groot CSV bestand in chunks verwerkt:\n\n1. Lees 'huge_file.csv' in chunks met pd.read_csv(..., chunksize=3)\n2. Voor ELK chunk:\n   - Filter de rijen waar 'value' > 500\n   - Sla de gefilterde rijen op in een lijst\n3. Combineer alle gefilterde chunks tot één DataFrame\n4. Sla het resultaat op naar 'processed.csv'\n5. Print het totale aantal verwerkte chunks en gefilterde rijen\n\nDit is een geheugen-efficientie taak. De data moet in stukken worden verwerkt, niet in één keer in geheugen.\n\nHet script moet de bestaande input bestanden lezen die al in dezelfde map staan. Maak GEEN dummy data aan.\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
   "expected_behavior": "Het script leest CSV in chunks, filtert value > 500 per chunk, combineert resultaten, en slaat op. Demonstreert chunked processing voor grote bestanden.",
   "evaluation_criteria": [
     "Gebruikt pd.read_csv met chunksize parameter",
@@ -14,6 +14,8 @@
     "Script schrijft naar processed.csv",
     "Print statistieken (aantal chunks en rijen)"
   ],
-  "input_files": ["huge_file.csv"],
+  "input_files": [
+    "huge_file.csv"
+  ],
   "output_file": "processed.csv"
 }

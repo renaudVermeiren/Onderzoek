@@ -1,0 +1,18 @@
+{
+  "id": "task_25",
+  "name": "Fuzzy Matching Deduplication",
+  "category": "data_cleaning",
+  "difficulty": "hard",
+  "prompt": "Schrijf een Python script dat dubbele klanten detecteert met fuzzy matching:\n\n1. Lees 'customers.csv' in\n2. Identificeer rijen waar de naam 'similar' is (bijv. 'John Smith' vs 'Jon Smith')\n3. Gebruik een simple string similarity methode (bijv. SequenceMatcher of string distance)\n4. Voor elke groep van similar namen, behoud ALLEEN de eerste rij\n5. Sla het resultaat op naar 'deduplicated.csv'\n\nHet script moet de bestaande input bestanden lezen die al in dezelfde map staan. Maak GEEN dummy data aan.\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
+  "expected_behavior": "Het script detecteert dat John Smith/Jon Smith, Jane Doe/Jan Doe, en Bob Wilson/Robert Wilson dubbel zijn, en behoudt alleen de eerste van elke groep.",
+  "evaluation_criteria": [
+    "Output bevat exact 4 unieke klanten",
+    "John Smith (eerste) is aanwezig, Jon Smith is verwijderd",
+    "Jane Doe (eerste) is aanwezig, Jan Doe is verwijderd",
+    "Bob Wilson (eerste) is aanwezig, Robert Wilson is verwijderd",
+    "Alice Brown is aanwezig (geen duplicaat)",
+    "Script leest van customers.csv en schrijft naar deduplicated.csv"
+  ],
+  "input_files": ["customers.csv"],
+  "output_file": "deduplicated.csv"
+}

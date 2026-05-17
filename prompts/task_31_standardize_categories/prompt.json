@@ -1,0 +1,18 @@
+{
+  "id": "task_31",
+  "name": "Standardize Categorical Values",
+  "category": "data_cleaning",
+  "difficulty": "medium",
+  "prompt": "Schrijf een Python script dat categorische waarden standardiseert:\n\n1. Lees 'countries.csv' in\n2. De 'country' kolom bevat inconsistente waarden voor dezelfde landen:\n   - USA, United States, US, U.S.A. -> 'United States'\n   - Canada, canada, CAN -> 'Canada'\n   - United Kingdom, UK, U.K. -> 'United Kingdom'\n   - France, FR -> 'France'\n3. Standardiseer ALLE waarden naar een consistent formaat (titlename met eerste letter hoofdletter)\n4. Sla het resultaat op naar 'standardized.csv'\n\nHet script moet de bestaande input bestanden lezen die al in dezelfde map staan. Maak GEEN dummy data aan.\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
+  "expected_behavior": "Het script standardiseert alle landnamen naar consistente titlename formaat, bijv. 'United States', 'Canada', 'United Kingdom', 'France'.",
+  "evaluation_criteria": [
+    "Alle USA-variants zijn 'United States'",
+    "Alle Canada-variants zijn 'Canada'",
+    "Alle UK-variants zijn 'United Kingdom'",
+    "Alle France-variants zijn 'France'",
+    "Geen inconsistente waarden meer",
+    "Script leest van countries.csv en schrijft naar standardized.csv"
+  ],
+  "input_files": ["countries.csv"],
+  "output_file": "standardized.csv"
+}

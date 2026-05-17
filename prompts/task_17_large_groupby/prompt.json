@@ -3,7 +3,7 @@
   "name": "Large Dataset GroupBy",
   "category": "performance",
   "difficulty": "medium",
-  "prompt": "Schrijf een Python script dat een groot dataset efficient verwerkt:\n\n1. Lees 'large_sales.csv' in (dit is een groter bestand met 1000+ rijen)\n2. Groepeer de data per 'category'\n3. Bereken de som van 'sales' per category\n4. Sorteer het resultaat op 'sales' aflopend (hoogste eerst)\n5. Sla het resultaat op naar 'summary.csv'\n6. De output moet kolommen bevatten: category, total_sales\n\nLet op: Dit is een efficiëntie taak. Zorg dat je code goed presteert met grotere datasets.\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
+  "prompt": "Schrijf een Python script dat een groot dataset efficient verwerkt:\n\n1. Lees 'large_sales.csv' in (dit is een groter bestand met 1000+ rijen)\n2. Groepeer de data per 'category'\n3. Bereken de som van 'sales' per category\n4. Sorteer het resultaat op 'sales' aflopend (hoogste eerst)\n5. Sla het resultaat op naar 'summary.csv'\n6. De output moet kolommen bevatten: category, total_sales\n\nLet op: Dit is een efficiëntie taak. Zorg dat je code goed presteert met grotere datasets.\n\nHet script moet de bestaande input bestanden lezen die al in dezelfde map staan. Maak GEEN dummy data aan.\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
   "expected_behavior": "Het script leest een groot CSV bestand, groepeert per category met groupby, sommeert sales, sorteert aflopend, en slaat op.",
   "evaluation_criteria": [
     "CSV correct ingelezen met pandas",
@@ -13,6 +13,8 @@
     "Output kolommen: category, total_sales",
     "Script werkt efficiënt met grotere datasets"
   ],
-  "input_files": ["large_sales.csv"],
+  "input_files": [
+    "large_sales.csv"
+  ],
   "output_file": "summary.csv"
 }

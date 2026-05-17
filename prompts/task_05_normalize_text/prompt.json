@@ -3,7 +3,7 @@
   "name": "Normalize Text Fields",
   "category": "data_cleaning",
   "difficulty": "medium",
-  "prompt": "Schrijf een Python script dat een CSV bestand inleest en tekstvelden normaliseert:\n\n1. Converteer alle email adressen naar lowercase\n2. Verwijder leading en trailing whitespace van alle tekstkolommen (name, email, city)\n3. Valideer email adressen en verwijder rijen met ongeldige emails\n4. Een geldig email adres bevat: tekst@domein.extensie\n5. Sla het resultaat op naar output.csv\n\nHet input bestand is 'input.csv'. Schrijf de output naar 'output.csv'.\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
+  "prompt": "Schrijf een Python script dat een CSV bestand inleest en tekstvelden normaliseert:\n\n1. Converteer alle email adressen naar lowercase\n2. Verwijder leading en trailing whitespace van alle tekstkolommen (name, email, city)\n3. Valideer email adressen en verwijder rijen met ongeldige emails\n4. Een geldig email adres bevat: tekst@domein.extensie\n5. Sla het resultaat op naar output.csv\n\nHet input bestand is 'input.csv'. Schrijf de output naar 'output.csv'.\n\nHet script moet de bestaande input bestanden lezen die al in dezelfde map staan. Maak GEEN dummy data aan.\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
   "expected_behavior": "Het script normaliseert tekstvelden: emails naar lowercase, whitespace verwijderd, en ongeldige emails verwijderd.",
   "evaluation_criteria": [
     "Alle emails zijn in lowercase",
@@ -14,6 +14,8 @@
     "Regex wordt gebruikt voor email validatie",
     "Output heeft 3 rijen (headers + 2 data)"
   ],
-  "input_files": ["input.csv"],
+  "input_files": [
+    "input.csv"
+  ],
   "output_file": "output.csv"
 }

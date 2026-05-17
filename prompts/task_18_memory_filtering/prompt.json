@@ -3,7 +3,7 @@
   "name": "Memory-Efficient Filtering",
   "category": "performance",
   "difficulty": "hard",
-  "prompt": "Schrijf een Python script dat efficiënt data filtert zonder onnodig geheugen te gebruiken:\n\n1. Lees 'large_dataset.csv' in (dit is een groter bestand)\n2. Filter alleen de rijen waar 'value' > 1000\n3. BELANGRIJK: Zorg dat je het volgende voorkomt:\n   - Laad de data NIET twee keer in geheugen\n   - Gebruik GEEN iterrows() of itertuples() voor filtering\n   - Gebruik pandas vectorized filtering of query()\n4. Sla het gefilterde resultaat op naar 'filtered.csv'\n5. Print het aantal gefilterde rijen\n\nDit is een optimalisatie taak. Focus op efficiënt geheugengebruik.\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
+  "prompt": "Schrijf een Python script dat efficiënt data filtert zonder onnodig geheugen te gebruiken:\n\n1. Lees 'large_dataset.csv' in (dit is een groter bestand)\n2. Filter alleen de rijen waar 'value' > 1000\n3. BELANGRIJK: Zorg dat je het volgende voorkomt:\n   - Laad de data NIET twee keer in geheugen\n   - Gebruik GEEN iterrows() of itertuples() voor filtering\n   - Gebruik pandas vectorized filtering of query()\n4. Sla het gefilterde resultaat op naar 'filtered.csv'\n5. Print het aantal gefilterde rijen\n\nDit is een optimalisatie taak. Focus op efficiënt geheugengebruik.\n\nHet script moet de bestaande input bestanden lezen die al in dezelfde map staan. Maak GEEN dummy data aan.\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
   "expected_behavior": "Het script filtert rijen waar value > 1000 met een efficiënte methode, zonder data meerdere keren in geheugen te laden of row-wise loops te gebruiken.",
   "evaluation_criteria": [
     "Correcte filtering (value > 1000)",
@@ -13,6 +13,8 @@
     "Print aantal gefilterde rijen",
     "Script schrijft naar filtered.csv"
   ],
-  "input_files": ["large_dataset.csv"],
+  "input_files": [
+    "large_dataset.csv"
+  ],
   "output_file": "filtered.csv"
 }

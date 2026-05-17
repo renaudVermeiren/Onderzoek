@@ -1,0 +1,17 @@
+{
+  "id": "task_22",
+  "name": "Column Renaming and Selection",
+  "category": "data_transformation",
+  "difficulty": "easy",
+  "prompt": "Schrijf een Python script dat kolommen hernoemt en selecteert:\n\n1. Lees 'input.csv' in\n2. Hernoem de kolommen:\n   - 'col_1' -> 'name'\n   - 'col_2' -> 'age'\n   - 'col_3' -> 'department'\n   - 'col_4' -> 'salary'\n   - 'col_5' -> 'hire_date'\n3. Selecteer ALLEEN de kolommen: name, age, department, salary\n   (dus verwijder 'hire_date' en 'id')\n4. Sla het resultaat op naar 'clean_data.csv'\n\nHet script moet de bestaande input bestanden lezen die al in dezelfde map staan. Maak GEEN dummy data aan.\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
+  "expected_behavior": "Het script leest input.csv, hernoemt de kolommen naar beschrijvende namen, selecteert alleen de relevante kolommen, en slaat op als clean_data.csv.",
+  "evaluation_criteria": [
+    "Kolommen zijn correct hernoemd",
+    "Alleen kolommen name, age, department, salary zijn aanwezig",
+    "id en hire_date kolommen zijn verwijderd",
+    "Alle 5 rijen zijn aanwezig",
+    "Script leest van input.csv en schrijft naar clean_data.csv"
+  ],
+  "input_files": ["input.csv"],
+  "output_file": "clean_data.csv"
+}

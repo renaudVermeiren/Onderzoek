@@ -27,6 +27,7 @@ from core.evaluators.execution_evaluator import ExecutionEvaluator
 from core.evaluators.performance_evaluator import PerformanceEvaluator
 from core.evaluators.radon_evaluator import RadonEvaluator
 from core.evaluators.functional_test_evaluator import FunctionalTestEvaluator
+from core.evaluators.style_evaluator import StyleEvaluator
 
 
 def load_generated_script(task_folder: Path) -> str:
@@ -60,6 +61,7 @@ def run_quality_evaluation(task_folder: Path, model_name: str, task_id: str) -> 
     
     evaluators = [
         ("Syntax", SyntaxEvaluator()),
+        ("Style", StyleEvaluator()),
         ("Security", SecurityEvaluator()),
         ("Execution", ExecutionEvaluator()),
         ("Performance", PerformanceEvaluator()),
@@ -106,7 +108,7 @@ def evaluate_all_tasks():
     print("🔍 COMPREHENSIVE CODE EVALUATION")
     print("=" * 70)
     print("\nThis script evaluates generated code for:")
-    print("  • Quality: Syntax, Security, Execution, Performance, Maintainability")
+    print("  • Quality: Syntax, Style, Security, Execution, Performance, Maintainability")
     print("  • Functionality: Task-specific tests")
     print(f"\nResults will be saved in: {RESULTS_DIR}\n")
     

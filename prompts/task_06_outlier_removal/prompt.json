@@ -3,7 +3,7 @@
   "name": "Outlier Removal",
   "category": "data_cleaning",
   "difficulty": "medium",
-  "prompt": "Schrijf een Python script dat een CSV bestand inleest en statistische outliers verwijdert:\n\n1. Bereken het gemiddelde (mean) en de standaarddeviatie (std) van de 'value' kolom\n2. Definieer outliers als waarden die meer dan 3 standaarddeviaties verwijderd zijn van het gemiddelde (|value - mean| > 3 * std)\n3. Verwijder alle rijen die outliers bevatten\n4. Print naar console: 'Removed X outliers, kept Y rows'\n5. Sla het gefilterde resultaat op naar output.csv\n\nHet input bestand is 'input.csv'. Schrijf de output naar 'output.csv'.\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
+  "prompt": "Schrijf een Python script dat een CSV bestand inleest en statistische outliers verwijdert:\n\n1. Bereken het gemiddelde (mean) en de standaarddeviatie (std) van de 'value' kolom\n2. Definieer outliers als waarden die meer dan 3 standaarddeviaties verwijderd zijn van het gemiddelde (|value - mean| > 3 * std)\n3. Verwijder alle rijen die outliers bevatten\n4. Print naar console: 'Removed X outliers, kept Y rows'\n5. Sla het gefilterde resultaat op naar output.csv\n\nHet input bestand is 'input.csv'. Schrijf de output naar 'output.csv'.\n\nHet script moet de bestaande input bestanden lezen die al in dezelfde map staan. Maak GEEN dummy data aan.\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
   "expected_behavior": "Het script verwijdert rijen waar value meer dan 3 std dev van mean ligt (waarschijnlijk rows 2 en 9 met values 100 en 105).",
   "evaluation_criteria": [
     "Berekening van mean en std van value kolom",
@@ -14,6 +14,8 @@
     "Gebruikt pandas en numpy voor berekeningen",
     "Output bevat geen waarden > 3 std van mean"
   ],
-  "input_files": ["input.csv"],
+  "input_files": [
+    "input.csv"
+  ],
   "output_file": "output.csv"
 }

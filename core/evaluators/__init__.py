@@ -66,5 +66,6 @@ from core.evaluators.performance_evaluator import PerformanceEvaluator
 from core.evaluators.radon_evaluator import RadonEvaluator
 from core.evaluators.execution_evaluator import ExecutionEvaluator
 from core.evaluators.functional_test_evaluator import FunctionalTestEvaluator
+from core.evaluators.style_evaluator import StyleEvaluator
 
-__all__ = ['BaseEvaluator', 'EvaluationResult', 'SyntaxEvaluator', 'SecurityEvaluator', 'PerformanceEvaluator', 'RadonEvaluator', 'ExecutionEvaluator', 'FunctionalTestEvaluator']
+__all__ = ['BaseEvaluator', 'EvaluationResult', 'SyntaxEvaluator', 'SecurityEvaluator', 'PerformanceEvaluator', 'RadonEvaluator', 'ExecutionEvaluator', 'FunctionalTestEvaluator', 'StyleEvaluator']

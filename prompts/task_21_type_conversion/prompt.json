@@ -1,0 +1,17 @@
+{
+  "id": "task_21",
+  "name": "Data Type Conversion",
+  "category": "data_cleaning",
+  "difficulty": "easy",
+  "prompt": "Schrijf een Python script dat kolommen naar de juiste data types converteert:\n\n1. Lees 'input.csv' in\n2. Converteer de volgende kolommen:\n   - 'price': van string naar float\n   - 'quantity': van string naar integer\n   - 'order_date': van string naar datetime (YYYY-MM-DD formaat)\n3. Controleer dat de conversies succesvol zijn\n4. Sla het resultaat op naar 'converted.csv'\n\nHet script moet de bestaande input bestanden lezen die al in dezelfde map staan. Maak GEEN dummy data aan.\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
+  "expected_behavior": "Het script leest input.csv en converteert price naar float, quantity naar int, en order_date naar datetime formaat.",
+  "evaluation_criteria": [
+    "price kolom is numeriek (float)",
+    "quantity kolom is integer",
+    "order_date is datetime formaat",
+    "Alle 5 producten zijn aanwezig",
+    "Script leest van input.csv en schrijft naar converted.csv"
+  ],
+  "input_files": ["input.csv"],
+  "output_file": "converted.csv"
+}

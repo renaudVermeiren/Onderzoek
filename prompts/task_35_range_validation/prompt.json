@@ -1,0 +1,19 @@
+{
+  "id": "task_35",
+  "name": "Validate and Clean Data Ranges",
+  "category": "data_cleaning",
+  "difficulty": "medium",
+  "prompt": "Schrijf een Python script dat data ranges valideert en opschoont:\n\n1. Lees 'input.csv' in\n2. Valideer de volgende kolommen met range regels:\n   - 'age': moet tussen 0 en 120 zijn\n   - 'temperature': moet tussen 35.0 en 42.0 zijn (Celsius)\n3. Voor invalide waarden:\n   - Vervang door de mediaan van de geldige waarden in die kolom\n4. Sla het resultaat op naar 'validated.csv'\n\nHet script moet de bestaande input bestanden lezen die al in dezelfde map staan. Maak GEEN dummy data aan.\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
+  "expected_behavior": "Het script valideert ages (0-120) en temperature (35-42°C), vervangt invalide waarden door de mediaan van geldige waarden.",
+  "evaluation_criteria": [
+    "Alle ages liggen tussen 0 en 120",
+    "Alle temperatures liggen tussen 35.0 en 42.0",
+    "Bob's age (150) is vervangen door mediaan",
+    "Charlie's age (-5) is vervangen door mediaan",
+    "Diana's temperature (45.0) is vervangen door mediaan",
+    "Eve's temperature (25.0) is vervangen door mediaan",
+    "Script leest van input.csv en schrijft naar validated.csv"
+  ],
+  "input_files": ["input.csv"],
+  "output_file": "validated.csv"
+}

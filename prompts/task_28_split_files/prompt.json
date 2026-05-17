@@ -1,0 +1,18 @@
+{
+  "id": "task_28",
+  "name": "Split Data into Multiple Files",
+  "category": "data_transformation",
+  "difficulty": "easy",
+  "prompt": "Schrijf een Python script dat data opsplitst in aparte bestanden per categorie:\n\n1. Lees 'input.csv' in\n2. Groepeer de data op 'category' kolom\n3. Sla ELKE groep op als een apart CSV bestand:\n   - Categorie A -> 'category_A.csv'\n   - Categorie B -> 'category_B.csv'\n   - Categorie C -> 'category_C.csv'\n4. Behoud dezelfde kolommen in elk bestand\n\nHet script moet de bestaande input bestanden lezen die al in dezelfde map staan. Maak GEEN dummy data aan.\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
+  "expected_behavior": "Het script leest input.csv en splitst deze in 3 aparte bestanden op basis van de category kolom.",
+  "evaluation_criteria": [
+    "3 output bestanden zijn aangemaakt",
+    "category_A.csv bevat Alice en Charlie",
+    "category_B.csv bevat Bob en Eve",
+    "category_C.csv bevat David en Frank",
+    "Elk bestand heeft de juiste kolommen",
+    "Script leest van input.csv"
+  ],
+  "input_files": ["input.csv"],
+  "output_file": "category_A.csv"
+}

@@ -3,7 +3,7 @@
   "name": "Duplicate Removal",
   "category": "data_cleaning",
   "difficulty": "easy",
-  "prompt": "Schrijf een Python script dat een CSV bestand inleest en duplicaten verwijdert:\n\n1. Identificeer duplicaten gebaseerd op combinatie van 'user_id' en 'order_id'\n2. Bij meerdere rijen met zelfde user_id + order_id, behoud alleen de rij met de laatste (nieuwste) timestamp\n3. Converteer timestamp kolom naar datetime voor correcte vergelijking\n4. Sla het resultaat op naar output.csv\n\nHet input bestand is 'input.csv'. Schrijf de output naar 'output.csv'.\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
+  "prompt": "Schrijf een Python script dat een CSV bestand inleest en duplicaten verwijdert:\n\n1. Identificeer duplicaten gebaseerd op combinatie van 'user_id' en 'order_id'\n2. Bij meerdere rijen met zelfde user_id + order_id, behoud alleen de rij met de laatste (nieuwste) timestamp\n3. Converteer timestamp kolom naar datetime voor correcte vergelijking\n4. Sla het resultaat op naar output.csv\n\nHet input bestand is 'input.csv'. Schrijf de output naar 'output.csv'.\n\nHet script moet de bestaande input bestanden lezen die al in dezelfde map staan. Maak GEEN dummy data aan.\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
   "expected_behavior": "Het script verwijdert duplicaten gebaseerd op user_id + order_id, behoudt alleen de rij met de nieuwste timestamp (2024-02-01 voor user 1, order 101).",
   "evaluation_criteria": [
     "Output heeft exact 3 rijen (geen duplicaten)",
@@ -13,6 +13,8 @@
     "Script leest van input.csv en schrijft naar output.csv",
     "Gebruikt pandas voor data manipulatie"
   ],
-  "input_files": ["input.csv"],
+  "input_files": [
+    "input.csv"
+  ],
   "output_file": "output.csv"
 }

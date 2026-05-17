@@ -7,6 +7,8 @@ to verify if the code correctly implements the required functionality.
 
 import subprocess
 import os
+import shutil
+import tempfile
 from pathlib import Path
 from typing import Dict, Any, List
 from datetime import datetime
@@ -38,7 +40,7 @@ class FunctionalTestEvaluator(BaseEvaluator):
         )
     
     def run_task_test(self, task_folder: Path) -> Dict[str, Any]:
-        """Run the test.py script in a task folder."""
+        """Run the test.py script in an isolated temporary copy of the task folder."""
         test_file = task_folder / "test.py"
         
         if not test_file.exists():
@@ -50,10 +52,23 @@ class FunctionalTestEvaluator(BaseEvaluator):
                 "stderr": ""
             }
         
+        temp_dir = None
         try:
+            # Create a temporary directory and copy all task artifacts
+            temp_dir = tempfile.mkdtemp(prefix="func_test_")
+            temp_path = Path(temp_dir)
+            
+            # Copy all files from task folder to temp directory
+            for item in task_folder.iterdir():
+                if item.is_file():
+                    shutil.copy2(item, temp_path / item.name)
+                elif item.is_dir():
+                    shutil.copytree(item, temp_path / item.name)
+            
+            # Run test.py in the isolated temp directory
             result = subprocess.run(
                 ['python', 'test.py'],
-                cwd=str(task_folder),
+                cwd=str(temp_path),
                 capture_output=True,
                 text=True,
                 timeout=self.timeout
@@ -88,3 +103,10 @@ class FunctionalTestEvaluator(BaseEvaluator):
                 "stderr": str(e),
                 "return_code": -1
             }
+        finally:
+            # Clean up temporary directory
+            if temp_dir:
+                try:
+                    shutil.rmtree(temp_dir)
+                except Exception:
+                    pass

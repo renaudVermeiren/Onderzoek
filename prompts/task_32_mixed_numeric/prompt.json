@@ -1,0 +1,17 @@
+{
+  "id": "task_32",
+  "name": "Handle Mixed Numeric Formats",
+  "category": "data_cleaning",
+  "difficulty": "medium",
+  "prompt": "Schrijf een Python script dat gemixte numerieke formaten opschoont:\n\n1. Lees 'input.csv' in\n2. Schoon de volgende kolommen op:\n   - 'price': verwijder $ en , en converteer naar float (bijv. '$1.250' -> 1250.0)\n   - 'percentage': verwijder % en converteer naar float 0-100 (bijv. '50%' -> 50.0)\n   - 'temperature': verwijder °C en converteer naar float (bijv. '25°C' -> 25.0)\n3. Sla het resultaat op naar 'cleaned.csv'\n\nHet script moet de bestaande input bestanden lezen die al in dezelfde map staan. Maak GEEN dummy data aan.\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
+  "expected_behavior": "Het script verwijderd alle niet-numerieke tekens ($, %, °C, kommas) en converteert de kolommen naar float.",
+  "evaluation_criteria": [
+    "price kolom is float zonder $ of ,",
+    "percentage kolom is float 0-100 zonder %",
+    "temperature kolom is float zonder °C",
+    "Waarden zijn numeriek correct",
+    "Script leest van input.csv en schrijft naar cleaned.csv"
+  ],
+  "input_files": ["input.csv"],
+  "output_file": "cleaned.csv"
+}

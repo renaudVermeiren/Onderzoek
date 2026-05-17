@@ -3,7 +3,7 @@
   "name": "Read JSON and Flatten",
   "category": "data_loading",
   "difficulty": "medium",
-  "prompt": "Schrijf een Python script dat geneste JSON data flat maakt:\n\n1. Lees 'nested_data.json' in\n2. Het JSON bestand bevat geneste structuren met user info en address\n3. Flatten de geneste structuur naar een platte DataFrame\n4. Gebruik pandas json_normalize of een vergelijkbare methode\n5. Output kolommen moeten zijn: id, name, email, address_street, address_city, address_country\n6. Sla het resultaat op naar 'flat_data.csv'\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
+  "prompt": "Schrijf een Python script dat geneste JSON data flat maakt:\n\n1. Lees 'nested_data.json' in\n2. Het JSON bestand bevat geneste structuren met user info en address\n3. Flatten de geneste structuur naar een platte DataFrame\n4. Gebruik pandas json_normalize of een vergelijkbare methode\n5. Output kolommen moeten zijn: id, name, email, address_street, address_city, address_country\n6. Sla het resultaat op naar 'flat_data.csv'\n\nHet script moet de bestaande input bestanden lezen die al in dezelfde map staan. Maak GEEN dummy data aan.\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
   "expected_behavior": "Het script leest geneste JSON data en flattened deze naar een CSV met platte kolommen, waarbij geneste velden (address.street, address.city, address.country) worden omgezet naar aparte kolommen.",
   "evaluation_criteria": [
     "JSON bestand correct ingelezen",
@@ -13,6 +13,8 @@
     "Geen geneste structuren meer in output",
     "Script schrijft naar flat_data.csv"
   ],
-  "input_files": ["nested_data.json"],
+  "input_files": [
+    "nested_data.json"
+  ],
   "output_file": "flat_data.csv"
 }

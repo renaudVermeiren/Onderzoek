@@ -44,6 +44,7 @@ MODEL_COLORS = {
 # Evaluator colors
 EVAL_COLORS = {
     'Syntax': '#2ecc71',
+    'Style': '#e67e22',
     'Security': '#3498db',
     'Execution': '#f39c12',
     'Performance': '#e74c3c',
@@ -75,7 +76,7 @@ def create_evaluator_comparison_bars(data, output_dir):
     fig, ax = plt.subplots(figsize=(14, 8))
     
     models = list(data["models"].keys())
-    evaluators = ['Syntax', 'Security', 'Execution', 'Performance', 'Radon', 'Functional']
+    evaluators = ['Syntax', 'Style', 'Security', 'Execution', 'Performance', 'Radon', 'Functional']
     
     # Prepare data
     model_data = {model: {evaluator: 0 for evaluator in evaluators} for model in models}
@@ -149,7 +150,7 @@ def create_task_success_bars(data, output_dir):
                 # Count partial success (how many evaluators passed)
                 quality = task_data.get("quality", {})
                 passed = sum(1 for q in quality.values() if q.get("passed", False))
-                task_results[task_id][model_name] = (passed / 6) * 100
+                task_results[task_id][model_name] = (passed / 7) * 100
     
     # Create grouped bar chart
     x = np.arange(len(tasks))
@@ -382,7 +383,7 @@ def create_model_ranking_bars(data, output_dir):
             quality = task_data.get("quality", {})
             # Count how many evaluators passed
             passed = sum(1 for q in quality.values() if q.get("passed", False))
-            scores.append((passed / 6) * 100)  # 6 evaluators total
+            scores.append((passed / 7) * 100)  # 7 evaluators total
         
         avg_score = np.mean(scores)
         model_scores.append((model_name, avg_score))

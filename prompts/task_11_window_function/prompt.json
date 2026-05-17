@@ -3,7 +3,7 @@
   "name": "Window Function Simulation",
   "category": "data_transformation",
   "difficulty": "medium",
-  "prompt": "Schrijf een Python script dat orders ranked per gebruiker:\n\n1. Lees 'orders.csv' in\n2. Voeg een 'rank' kolom toe die de orders per gebruiker ranked op datum (nieuwste = rank 1)\n3. Gebruik sort_values en rank methodes (simuleer SQL ROW_NUMBER())\n4. Output ALLE orders met kolommen: order_id, user_id, order_date, amount, rank\n5. Sorteer eerst op user_id, dan op rank\n6. Sla het resultaat op naar 'output.csv'\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
+  "prompt": "Schrijf een Python script dat orders ranked per gebruiker:\n\n1. Lees 'orders.csv' in\n2. Voeg een 'rank' kolom toe die de orders per gebruiker ranked op datum (nieuwste = rank 1)\n3. Gebruik sort_values en rank methodes (simuleer SQL ROW_NUMBER())\n4. Output ALLE orders met kolommen: order_id, user_id, order_date, amount, rank\n5. Sorteer eerst op user_id, dan op rank\n6. Sla het resultaat op naar 'output.csv'\n\nHet script moet de bestaande input bestanden lezen die al in dezelfde map staan. Maak GEEN dummy data aan.\n\nReturn ALLEEN de Python code zonder extra uitleg. De code moet direct uitvoerbaar zijn.",
   "expected_behavior": "Het script voegt een rank kolom toe per user_id, waarbij de nieuwste order rank 1 krijgt. Output bevat alle orders met rank kolom.",
   "evaluation_criteria": [
     "Rank kolom correct toegevoegd",
@@ -13,6 +13,8 @@
     "Data gesorteerd op user_id, dan rank",
     "Script leest van orders.csv en schrijft naar output.csv"
   ],
-  "input_files": ["orders.csv"],
+  "input_files": [
+    "orders.csv"
+  ],
   "output_file": "output.csv"
 }

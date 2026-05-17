@@ -85,15 +85,22 @@ class SecurityEvaluator(BaseEvaluator):
             details["bandit_skipped"] = True
         else:
             try:
-                # Write code to temporary file
-                with tempfile.NamedTemporaryFile(
-                    mode='w', 
-                    suffix='.py', 
-                    delete=False,
-                    encoding='utf-8'
-                ) as tmp_file:
-                    tmp_file.write(code_content)
-                    tmp_path = tmp_file.name
+                # Use the actual file path when available, otherwise fall back to temp file
+                file_path_obj = Path(file_path)
+                use_temp = not (file_path_obj.exists() and file_path_obj.suffix == '.py')
+                
+                if use_temp:
+                    # Write code to temporary file
+                    with tempfile.NamedTemporaryFile(
+                        mode='w', 
+                        suffix='.py', 
+                        delete=False,
+                        encoding='utf-8'
+                    ) as tmp_file:
+                        tmp_file.write(code_content)
+                        target_path = tmp_file.name
+                else:
+                    target_path = str(file_path_obj)
                 
                 try:
                     # Run Bandit with JSON output
@@ -101,7 +108,7 @@ class SecurityEvaluator(BaseEvaluator):
                         [
                             "bandit",
                             "-f", "json",
-                            "-r", tmp_path,
+                            "-r", target_path,
                             "--skip", "B101"  # Skip assert_used warnings
                         ],
                         capture_output=True,
@@ -155,13 +162,15 @@ class SecurityEvaluator(BaseEvaluator):
                     
                     details["total_issues_found"] = total_issues
                     details["bandit_exit_code"] = result.returncode
+                    details["used_temp_file"] = use_temp
                     
                 finally:
-                    # Clean up temporary file
-                    try:
-                        os.unlink(tmp_path)
-                    except:
-                        pass
+                    # Clean up temporary file only if we created one
+                    if use_temp:
+                        try:
+                            os.unlink(target_path)
+                        except:
+                            pass
                         
             except subprocess.TimeoutExpired:
                 error_message = "Bandit analysis timed out (30s)"
