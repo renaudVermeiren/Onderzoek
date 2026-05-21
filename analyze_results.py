@@ -59,7 +59,7 @@ def load_results(results_dir):
     overall_file = results_path / "overall_results.json"
     
     if not overall_file.exists():
-        print(f"❌ Error: {overall_file} not found")
+        print(f"[ERROR] {overall_file} not found")
         sys.exit(1)
     
     with open(overall_file, 'r', encoding='utf-8') as f:
@@ -69,6 +69,44 @@ def load_results(results_dir):
 def get_model_color(model_name):
     """Get consistent color for a model."""
     return MODEL_COLORS.get(model_name, '#95a5a6')  # Default gray
+
+
+def load_task_categories():
+    """Load prompt categories and map to merged categories for representative groups."""
+    prompts_dir = Path("prompts")
+    task_to_category = {}
+    
+    # Load individual task categories from prompt.json files
+    for prompt_dir in prompts_dir.iterdir():
+        if prompt_dir.is_dir():
+            prompt_file = prompt_dir / "prompt.json"
+            if prompt_file.exists():
+                with open(prompt_file, 'r', encoding='utf-8') as f:
+                    prompt_data = json.load(f)
+                task_id = prompt_data.get("id", prompt_dir.name)
+                original_category = prompt_data.get("category", "unknown")
+                task_to_category[task_id] = original_category
+    
+    # Merge small categories into representative groups
+    category_mapping = {
+        "data_cleaning": "Data Cleaning",
+        "data_transformation": "Data Transformation",
+        "joins": "Joins & Aggregation",
+        "performance": "Performance Optimization",
+        # Merge small categories into "Data Operations"
+        "data_loading": "Data Operations",
+        "data_validation": "Data Operations",
+        "data_filtering": "Data Operations",
+        "time_series": "Data Operations",
+    }
+    
+    # Map each task to its merged category
+    task_to_merged = {}
+    for task_id, original_cat in task_to_category.items():
+        merged_cat = category_mapping.get(original_cat, "Other")
+        task_to_merged[task_id] = merged_cat
+    
+    return task_to_merged
 
 
 def create_evaluator_comparison_bars(data, output_dir):
@@ -88,6 +126,8 @@ def create_evaluator_comparison_bars(data, output_dir):
             # Count passes for each evaluator
             if quality.get("Syntax", {}).get("passed", False):
                 model_data[model_name]["Syntax"] += 1
+            if quality.get("Style", {}).get("passed", False):
+                model_data[model_name]["Style"] += 1
             if quality.get("Security", {}).get("passed", False):
                 model_data[model_name]["Security"] += 1
             if quality.get("Execution", {}).get("passed", False):
@@ -129,53 +169,89 @@ def create_evaluator_comparison_bars(data, output_dir):
     plt.tight_layout()
     plt.savefig(output_dir / '01_evaluator_comparison.png', bbox_inches='tight')
     plt.close()
-    print("✅ Created: 01_evaluator_comparison.png")
+    print("[OK] Created: 01_evaluator_comparison.png")
 
 
 def create_task_success_bars(data, output_dir):
-    """Chart 2: Grouped bar chart showing success rate per task for each model."""
-    fig, ax = plt.subplots(figsize=(16, 8))
-    
+    """Chart 2: Grouped bar chart showing average success rate per task category for each model."""
     models = list(data["models"].keys())
-    tasks = sorted(list(list(data["models"].values())[0]["tasks"].keys()))
     
-    # Prepare data
-    task_results = {task: {model: 0 for model in models} for task in tasks}
+    # Load category mapping
+    task_to_merged = load_task_categories()
+    
+    # Collect scores per merged category per model
+    category_scores = {model: {} for model in models}
     
     for model_name, model_info in data["models"].items():
         for task_id, task_data in model_info["tasks"].items():
+            # Get merged category for this task
+            merged_category = task_to_merged.get(task_id, "Other")
+            
+            # Calculate score for this task
             if task_data.get("overall_passed", False):
-                task_results[task_id][model_name] = 100
+                score = 100.0
             else:
-                # Count partial success (how many evaluators passed)
                 quality = task_data.get("quality", {})
                 passed = sum(1 for q in quality.values() if q.get("passed", False))
-                task_results[task_id][model_name] = (passed / 7) * 100
+                score = (passed / 7) * 100
+            
+            # Add to category
+            if merged_category not in category_scores[model_name]:
+                category_scores[model_name][merged_category] = []
+            category_scores[model_name][merged_category].append(score)
+    
+    # Calculate averages per category
+    categories = sorted(list(set(cat for model_cats in category_scores.values() for cat in model_cats.keys())))
+    
+    category_averages = {model: {} for model in models}
+    for model in models:
+        for category in categories:
+            scores = category_scores[model].get(category, [])
+            if scores:
+                category_averages[model][category] = np.mean(scores)
+            else:
+                category_averages[model][category] = 0.0
+    
+    # Count tasks per category for labels
+    task_counts = {}
+    for task_id, merged_cat in task_to_merged.items():
+        task_counts[merged_cat] = task_counts.get(merged_cat, 0) + 1
     
     # Create grouped bar chart
-    x = np.arange(len(tasks))
-    width = 0.12
+    fig, ax = plt.subplots(figsize=(14, 8))
+    
+    x = np.arange(len(categories))
+    width = 0.15
     
     for i, model in enumerate(models):
-        values = [task_results[task][model] for task in tasks]
+        values = [category_averages[model][cat] for cat in categories]
         offset = (i - len(models)/2 + 0.5) * width
-        ax.bar(x + offset, values, width, label=model, color=get_model_color(model),
+        bars = ax.bar(x + offset, values, width, label=model, color=get_model_color(model),
                edgecolor='black', linewidth=0.5)
+        
+        # Add value labels on top of bars
+        for bar, val in zip(bars, values):
+            height = bar.get_height()
+            ax.text(bar.get_x() + bar.get_width()/2., height + 1,
+                   f'{val:.1f}', ha='center', va='bottom', fontsize=8)
     
-    ax.set_xlabel('Task', fontweight='bold')
-    ax.set_ylabel('Success Score (%)', fontweight='bold')
-    ax.set_title('Task Performance by Model\n(100% = all evaluators passed, 0% = all failed)', 
+    # Create category labels with task counts
+    category_labels = [f"{cat}\n({task_counts.get(cat, 0)} tasks)" for cat in categories]
+    
+    ax.set_xlabel('Task Category', fontweight='bold')
+    ax.set_ylabel('Average Success Score (%)', fontweight='bold')
+    ax.set_title('Average Task Performance by Category and Model\n(100% = all evaluators passed, 0% = all failed)',
                  fontweight='bold', pad=20)
     ax.set_xticks(x)
-    ax.set_xticklabels(tasks, rotation=45, ha='right')
+    ax.set_xticklabels(category_labels)
     ax.legend(title='Models', bbox_to_anchor=(1.05, 1), loc='upper left')
-    ax.set_ylim(0, 105)
+    ax.set_ylim(0, 110)
     ax.grid(axis='y', alpha=0.3)
     
     plt.tight_layout()
     plt.savefig(output_dir / '02_task_performance.png', bbox_inches='tight')
     plt.close()
-    print("✅ Created: 02_task_performance.png")
+    print("[OK] Created: 02_task_performance.png")
 
 
 def create_maintainability_bars(data, output_dir):
@@ -235,7 +311,7 @@ def create_maintainability_bars(data, output_dir):
     plt.tight_layout()
     plt.savefig(output_dir / '03_maintainability.png', bbox_inches='tight')
     plt.close()
-    print("✅ Created: 03_maintainability.png")
+    print("[OK] Created: 03_maintainability.png")
 
 
 def create_lines_of_code_boxplot(data, output_dir):
@@ -279,7 +355,7 @@ def create_lines_of_code_boxplot(data, output_dir):
     plt.tight_layout()
     plt.savefig(output_dir / '04_lines_of_code.png', bbox_inches='tight')
     plt.close()
-    print("✅ Created: 04_lines_of_code.png")
+    print("[OK] Created: 04_lines_of_code.png")
 
 
 def create_execution_time_boxplot(data, output_dir):
@@ -323,7 +399,7 @@ def create_execution_time_boxplot(data, output_dir):
     plt.tight_layout()
     plt.savefig(output_dir / '05_execution_times.png', bbox_inches='tight')
     plt.close()
-    print("✅ Created: 05_execution_times.png")
+    print("[OK] Created: 05_execution_times.png")
 
 
 def create_security_issues_bars(data, output_dir):
@@ -367,7 +443,7 @@ def create_security_issues_bars(data, output_dir):
     plt.tight_layout()
     plt.savefig(output_dir / '06_security_issues.png', bbox_inches='tight')
     plt.close()
-    print("✅ Created: 06_security_issues.png")
+    print("[OK] Created: 06_security_issues.png")
 
 
 def create_model_ranking_bars(data, output_dir):
@@ -420,13 +496,13 @@ def create_model_ranking_bars(data, output_dir):
     plt.tight_layout()
     plt.savefig(output_dir / '07_model_ranking.png', bbox_inches='tight')
     plt.close()
-    print("✅ Created: 07_model_ranking.png")
+    print("[OK] Created: 07_model_ranking.png")
 
 
 def main():
     """Main function to run all analyses."""
     print("=" * 70)
-    print("📊 LLM MODEL COMPARISON ANALYSIS")
+    print("LLM MODEL COMPARISON ANALYSIS")
     print("=" * 70)
     
     # Determine results directory
@@ -435,31 +511,31 @@ def main():
     else:
         results_path = Path("results")
         if not results_path.exists():
-            print("❌ Error: results folder not found")
+            print("[ERROR] results folder not found")
             sys.exit(1)
         
         eval_folders = [f for f in results_path.iterdir() if f.is_dir() and f.name.startswith("evaluation_")]
         if not eval_folders:
-            print("❌ Error: No evaluation folders found")
+            print("[ERROR] No evaluation folders found")
             sys.exit(1)
         
         results_dir = str(sorted(eval_folders)[-1])
     
-    print(f"\n📁 Analyzing results from: {results_dir}")
+    print(f"\nAnalyzing results from: {results_dir}")
     
     # Create graphs output directory
     output_dir = Path("graphs") / Path(results_dir).name
     output_dir.mkdir(parents=True, exist_ok=True)
     
-    print(f"💾 Graphs will be saved to: {output_dir}\n")
+    print(f"Graphs will be saved to: {output_dir}\n")
     
     # Load data
-    print("📂 Loading evaluation data...")
+    print("Loading evaluation data...")
     data = load_results(results_dir)
-    print(f"✅ Loaded {data['total_models']} models and {data['total_tasks']} tasks\n")
+    print(f"[OK] Loaded {data['total_models']} models and {data['total_tasks']} tasks\n")
     
     # Create all charts
-    print("🎨 Creating comparison charts...\n")
+    print("Creating comparison charts...\n")
     print("=" * 70)
     
     create_evaluator_comparison_bars(data, output_dir)
@@ -471,9 +547,9 @@ def main():
     create_model_ranking_bars(data, output_dir)
     
     print("=" * 70)
-    print("\n✅ ANALYSIS COMPLETE!")
+    print("\nANALYSIS COMPLETE!")
     print("=" * 70)
-    print(f"\n📊 Generated 7 comparison charts in: {output_dir}")
+    print(f"\nGenerated 7 comparison charts in: {output_dir}")
     print("\nCharts created:")
     print("  1. Evaluator comparison (side-by-side bars)")
     print("  2. Task performance (grouped bars)")
