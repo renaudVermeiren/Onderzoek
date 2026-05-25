@@ -68,7 +68,7 @@ def get_available_models(configured_models=None):
     print(f"📋 Models to use: {models}")
     return models
 
-def send_prompt_to_model(model_name, prompt_content, timeout=TIMEOUT_SECONDS):
+def send_prompt_to_model(model_name, prompt_content, timeout=TIMEOUT_SECONDS, seed=None):
     """
     Send prompt to Ollama model and return raw response.
     
@@ -76,6 +76,7 @@ def send_prompt_to_model(model_name, prompt_content, timeout=TIMEOUT_SECONDS):
         model_name: Name of the Ollama model
         prompt_content: The prompt text to send
         timeout: Request timeout in seconds
+        seed: Optional seed override (uses LLM_SEED if not provided)
     
     Returns:
         Dictionary with response data
@@ -86,7 +87,7 @@ def send_prompt_to_model(model_name, prompt_content, timeout=TIMEOUT_SECONDS):
         "stream": False,
         "options": {
             "temperature": LLM_TEMPERATURE,
-            "seed": LLM_SEED
+            "seed": seed if seed is not None else LLM_SEED
         }
     }
     
