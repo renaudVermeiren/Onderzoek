@@ -63,8 +63,8 @@ class PerformanceEvaluator(BaseEvaluator):
                 # Determine working directory and script path
                 file_path_obj = Path(file_path)
                 
-                # Check if this is a task folder with generated_script.py
-                if file_path_obj.name == "generated_script.py" and file_path_obj.parent.exists():
+                # Check if this is a task folder with generated_script_v*.py
+                if file_path_obj.name.startswith("generated_script") and file_path_obj.name.endswith(".py") and file_path_obj.parent.exists():
                     working_dir = str(file_path_obj.parent)
                     # Use relative filename when setting cwd to avoid path doubling
                     script_path = file_path_obj.name

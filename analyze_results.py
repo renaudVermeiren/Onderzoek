@@ -1,19 +1,9 @@
 #!/usr/bin/env python3
-"""
-LLM Model Comparison Analysis - Bar Charts & Boxplots Only
 
-This script creates simplified bar charts and boxplots for comparing
-LLM models across different metrics and tasks.
-
-All graphs are saved to the 'graphs/' folder.
-
-Usage:
-    python analyze_results.py
-    python analyze_results.py results/evaluation_20260503_152114
-"""
 
 import json
 import sys
+import statistics
 from pathlib import Path
 from collections import defaultdict
 from datetime import datetime
@@ -31,14 +21,16 @@ plt.rcParams['font.size'] = 11
 plt.rcParams['axes.titlesize'] = 14
 plt.rcParams['axes.labelsize'] = 12
 
-# Define consistent colors for models (up to 6 models)
+# Define consistent colors for models (up to 8 models)
 MODEL_COLORS = {
-    'deepseek-coder-v2_latest': '#e74c3c',  # Red
-    'gemma4_latest': '#3498db',              # Blue  
-    'llama3_latest': '#2ecc71',              # Green
-    'mistral_latest': '#f39c12',             # Orange
-    'qwen2.5-coder_latest': '#9b59b6',       # Purple
-    'codellama': '#1abc9c',                  # Teal
+    'deepseek-coder-v2_latest': '#e74c3c',   # Red
+    'gemma4_latest': '#3498db',               # Blue  
+    'llama3_latest': '#2ecc71',               # Green
+    'mistral_latest': '#f39c12',              # Orange
+    'qwen2.5-coder_latest': '#9b59b6',        # Purple
+    'phi4-mini_latest': '#1abc9c',             # Teal
+    'qwen3.5_latest': '#e91e63',              # Pink
+    'codellama': '#95a5a6',                   # Gray
 }
 
 # Evaluator colors
@@ -69,6 +61,74 @@ def load_results(results_dir):
 def get_model_color(model_name):
     """Get consistent color for a model."""
     return MODEL_COLORS.get(model_name, '#95a5a6')  # Default gray
+
+
+def get_task_statistics(task_data):
+    """Extract sample statistics from task data."""
+    return task_data.get("statistics", {})
+
+
+def compute_evaluator_stats_from_samples(task_data, evaluator_name):
+    """Compute statistics from sample data directly since task-level statistics are incomplete.
+    
+    Returns:
+        (mean_score, std_dev, pass_count_str) tuple
+    """
+    samples = task_data.get("samples", [])
+    if not samples:
+        return 0.0, 0.0, "0/0"
+    
+    scores = []
+    passes = []
+    
+    for sample in samples:
+        eval_data = sample.get("quality", {}).get(evaluator_name, {})
+        if eval_data:  # Only count if evaluator exists
+            scores.append(eval_data.get("score", 0.0))
+            passes.append(1 if eval_data.get("passed", False) else 0)
+    
+    if not scores:
+        return 0.0, 0.0, "0/0"
+    
+    mean_score = statistics.mean(scores)
+    std_dev = statistics.stdev(scores) if len(scores) > 1 else 0.0
+    pass_count = f"{sum(passes)}/{len(passes)}"
+    
+    return mean_score, std_dev, pass_count
+
+
+def get_evaluator_stats(task_data, evaluator_name):
+    """Get mean score and std dev for an evaluator from statistics.
+    
+    Falls back to computing from sample data if task statistics are incomplete.
+    
+    Returns:
+        (mean_score, std_dev, pass_count_str) tuple
+    """
+    stats = get_task_statistics(task_data)
+    eval_stats = stats.get(evaluator_name, {})
+    
+    # If task statistics exist and have the data, use them
+    if eval_stats and "mean_score" in eval_stats:
+        mean_score = eval_stats.get("mean_score", 0.0)
+        std_dev = eval_stats.get("std_dev", 0.0)
+        pass_count = eval_stats.get("pass_count", "0/0")
+        return mean_score, std_dev, pass_count
+    
+    # Otherwise compute from sample data directly
+    return compute_evaluator_stats_from_samples(task_data, evaluator_name)
+
+
+def get_functional_pass_fraction(task_data):
+    """Get functional test pass fraction as string (e.g., '2/3')."""
+    stats = get_task_statistics(task_data)
+    func_stats = stats.get("Functional", {})
+    if func_stats:
+        return func_stats.get("pass_count", "0/0")
+    
+    # Fallback: compute from sample data
+    _, _, pass_count = compute_evaluator_stats_from_samples(task_data, "Functional")
+    return pass_count
 
 
 def load_task_categories():
@@ -110,56 +170,73 @@ def load_task_categories():
 
 
 def create_evaluator_comparison_bars(data, output_dir):
-    """Chart 1: Side-by-side bar chart comparing all evaluators across models."""
+    """Chart 1: Side-by-side bar chart comparing all evaluators across models.
+    
+    Shows mean pass rate across tasks.
+    """
     fig, ax = plt.subplots(figsize=(14, 8))
     
     models = list(data["models"].keys())
     evaluators = ['Syntax', 'Style', 'Security', 'Execution', 'Performance', 'Radon', 'Functional']
     
-    # Prepare data
-    model_data = {model: {evaluator: 0 for evaluator in evaluators} for model in models}
+    # Prepare data: mean pass rate and std dev per model-evaluator
+    model_data = {model: {evaluator: {"mean": 0.0, "std": 0.0} for evaluator in evaluators} for model in models}
     
     for model_name, model_info in data["models"].items():
         for task_id, task_data in model_info["tasks"].items():
-            quality = task_data.get("quality", {})
-            
-            # Count passes for each evaluator
-            if quality.get("Syntax", {}).get("passed", False):
-                model_data[model_name]["Syntax"] += 1
-            if quality.get("Style", {}).get("passed", False):
-                model_data[model_name]["Style"] += 1
-            if quality.get("Security", {}).get("passed", False):
-                model_data[model_name]["Security"] += 1
-            if quality.get("Execution", {}).get("passed", False):
-                model_data[model_name]["Execution"] += 1
-            if quality.get("Performance", {}).get("passed", False):
-                model_data[model_name]["Performance"] += 1
-            if quality.get("Radon", {}).get("passed", False):
-                model_data[model_name]["Radon"] += 1
-            
-            # Functional test
-            if task_data.get("functional", {}).get("test_passed", False):
-                model_data[model_name]["Functional"] += 1
+            for evaluator in evaluators:
+                # Compute pass rate directly from samples
+                samples = task_data.get("samples", [])
+                if not samples:
+                    continue
+                
+                passes = []
+                for sample in samples:
+                    if evaluator == "Functional":
+                        passed = sample.get("functional", {}).get("test_passed", False)
+                    else:
+                        eval_data = sample.get("quality", {}).get(evaluator, {})
+                        passed = eval_data.get("passed", False) if eval_data else False
+                    passes.append(1 if passed else 0)
+                
+                pass_rate = sum(passes) / len(passes) if passes else 0.0
+                
+                # Get std_dev from evaluator stats
+                _, std_dev, _ = get_evaluator_stats(task_data, evaluator)
+                
+                # Accumulate for averaging across tasks
+                if model_data[model_name][evaluator]["mean"] == 0.0:
+                    model_data[model_name][evaluator]["mean"] = pass_rate
+                    model_data[model_name][evaluator]["std"] = std_dev
+                else:
+                    # Average pass rates and propagate std dev
+                    old_mean = model_data[model_name][evaluator]["mean"]
+                    old_std = model_data[model_name][evaluator]["std"]
+                    model_data[model_name][evaluator]["mean"] = (old_mean + pass_rate) / 2
+                    model_data[model_name][evaluator]["std"] = np.sqrt((old_std**2 + std_dev**2) / 2)
     
     # Convert to percentages
-    num_tasks = len(list(data["models"].values())[0]["tasks"])
     for model in models:
         for evaluator in evaluators:
-            model_data[model][evaluator] = (model_data[model][evaluator] / num_tasks) * 100
+            model_data[model][evaluator]["mean"] *= 100
+            model_data[model][evaluator]["std"] *= 100
     
     # Create grouped bar chart
     x = np.arange(len(evaluators))
     width = 0.15
     
     for i, model in enumerate(models):
-        values = [model_data[model][eval] for eval in evaluators]
+        means = [model_data[model][eval]["mean"] for eval in evaluators]
+        stds = [model_data[model][eval]["std"] for eval in evaluators]
         offset = (i - len(models)/2 + 0.5) * width
-        ax.bar(x + offset, values, width, label=model, color=get_model_color(model), 
+        
+        bars = ax.bar(x + offset, means, width, label=model, color=get_model_color(model), 
                edgecolor='black', linewidth=0.5)
     
     ax.set_xlabel('Evaluator', fontweight='bold')
-    ax.set_ylabel('Pass Rate (%)', fontweight='bold')
-    ax.set_title('Model Performance Comparison by Evaluator\n(Higher is better)', fontweight='bold', pad=20)
+    ax.set_ylabel('Mean Pass Rate (%)', fontweight='bold')
+    ax.set_title('Model Performance Comparison by Evaluator (3 samples)\nMean across tasks',
+                 fontweight='bold', pad=20)
     ax.set_xticks(x)
     ax.set_xticklabels(evaluators)
     ax.legend(title='Models', bbox_to_anchor=(1.05, 1), loc='upper left')
@@ -173,13 +250,16 @@ def create_evaluator_comparison_bars(data, output_dir):
 
 
 def create_task_success_bars(data, output_dir):
-    """Chart 2: Grouped bar chart showing average success rate per task category for each model."""
+    """Chart 2: Grouped bar chart showing average success rate per task category for each model.
+    
+    Uses mean scores from sample statistics.
+    """
     models = list(data["models"].keys())
     
     # Load category mapping
     task_to_merged = load_task_categories()
     
-    # Collect scores per merged category per model
+    # Collect scores per merged category per model (mean ± std)
     category_scores = {model: {} for model in models}
     
     for model_name, model_info in data["models"].items():
@@ -187,30 +267,45 @@ def create_task_success_bars(data, output_dir):
             # Get merged category for this task
             merged_category = task_to_merged.get(task_id, "Other")
             
-            # Calculate score for this task
-            if task_data.get("overall_passed", False):
-                score = 100.0
+            # Calculate score from samples: average of all evaluator mean scores
+            eval_scores = []
+            eval_stds = []
+            
+            for eval_name in ['Syntax', 'Style', 'Security', 'Execution', 'Performance', 'Radon']:
+                mean_score, std_dev, _ = get_evaluator_stats(task_data, eval_name)
+                if mean_score > 0:
+                    eval_scores.append(mean_score)
+                    eval_stds.append(std_dev)
+            
+            if eval_scores:
+                score = np.mean(eval_scores) * 100
+                std = np.sqrt(np.mean([s**2 for s in eval_stds])) * 100 if eval_stds else 0.0
             else:
-                quality = task_data.get("quality", {})
-                passed = sum(1 for q in quality.values() if q.get("passed", False))
-                score = (passed / 7) * 100
+                score = 0.0
+                std = 0.0
             
             # Add to category
             if merged_category not in category_scores[model_name]:
-                category_scores[model_name][merged_category] = []
-            category_scores[model_name][merged_category].append(score)
+                category_scores[model_name][merged_category] = {"scores": [], "stds": []}
+            category_scores[model_name][merged_category]["scores"].append(score)
+            category_scores[model_name][merged_category]["stds"].append(std)
     
     # Calculate averages per category
     categories = sorted(list(set(cat for model_cats in category_scores.values() for cat in model_cats.keys())))
     
     category_averages = {model: {} for model in models}
+    category_stds = {model: {} for model in models}
+    
     for model in models:
         for category in categories:
-            scores = category_scores[model].get(category, [])
+            scores = category_scores[model].get(category, {}).get("scores", [])
+            stds = category_scores[model].get(category, {}).get("stds", [])
             if scores:
                 category_averages[model][category] = np.mean(scores)
+                category_stds[model][category] = np.sqrt(np.mean([s**2 for s in stds])) if stds else 0.0
             else:
                 category_averages[model][category] = 0.0
+                category_stds[model][category] = 0.0
     
     # Count tasks per category for labels
     task_counts = {}
@@ -224,23 +319,19 @@ def create_task_success_bars(data, output_dir):
     width = 0.15
     
     for i, model in enumerate(models):
-        values = [category_averages[model][cat] for cat in categories]
+        means = [category_averages[model][cat] for cat in categories]
+        stds = [category_stds[model][cat] for cat in categories]
         offset = (i - len(models)/2 + 0.5) * width
-        bars = ax.bar(x + offset, values, width, label=model, color=get_model_color(model),
-               edgecolor='black', linewidth=0.5)
         
-        # Add value labels on top of bars
-        for bar, val in zip(bars, values):
-            height = bar.get_height()
-            ax.text(bar.get_x() + bar.get_width()/2., height + 1,
-                   f'{val:.1f}', ha='center', va='bottom', fontsize=8)
+        bars = ax.bar(x + offset, means, width, label=model, color=get_model_color(model),
+               edgecolor='black', linewidth=0.5)
     
     # Create category labels with task counts
     category_labels = [f"{cat}\n({task_counts.get(cat, 0)} tasks)" for cat in categories]
     
     ax.set_xlabel('Task Category', fontweight='bold')
-    ax.set_ylabel('Average Success Score (%)', fontweight='bold')
-    ax.set_title('Average Task Performance by Category and Model\n(100% = all evaluators passed, 0% = all failed)',
+    ax.set_ylabel('Average Quality Score (%)', fontweight='bold')
+    ax.set_title('Average Task Performance by Category and Model (3 samples)\nMean of evaluator scores',
                  fontweight='bold', pad=20)
     ax.set_xticks(x)
     ax.set_xticklabels(category_labels)
@@ -255,37 +346,38 @@ def create_task_success_bars(data, output_dir):
 
 
 def create_maintainability_bars(data, output_dir):
-    """Chart 3: Bar chart comparing maintainability index per model."""
+    """Chart 3: Bar chart comparing maintainability index per model.
+    
+    Uses mean scores from sample statistics.
+    """
     fig, ax = plt.subplots(figsize=(12, 7))
     
     models = []
     avg_mi = []
-    min_mi = []
-    max_mi = []
+    std_mi = []
     
     for model_name, model_info in data["models"].items():
         mi_scores = []
+        mi_stds = []
+        
         for task_data in model_info["tasks"].values():
-            mi = task_data.get("quality", {}).get("Radon", {}).get("details", {}).get("maintainability_index", 0)
-            if mi > 0:
-                mi_scores.append(mi)
+            mean, std, _ = get_evaluator_stats(task_data, "Radon")
+            if mean > 0:
+                # Radon score is 0-1 scale, convert to 0-100
+                mi_scores.append(mean * 100)
+                mi_stds.append(std * 100)
         
         if mi_scores:
             models.append(model_name)
             avg_mi.append(np.mean(mi_scores))
-            min_mi.append(np.min(mi_scores))
-            max_mi.append(np.max(mi_scores))
+            # Propagate standard deviations
+            std_mi.append(np.sqrt(np.mean([s**2 for s in mi_stds])) if mi_stds else 0.0)
     
     x = np.arange(len(models))
     
-    # Create bars with error range
+    # Create bars
     bars = ax.bar(x, avg_mi, color=[get_model_color(m) for m in models],
                   edgecolor='black', linewidth=1)
-    
-    # Add error bars showing min-max range
-    for i, (avg, min_val, max_val) in enumerate(zip(avg_mi, min_mi, max_mi)):
-        ax.errorbar(i, avg, yerr=[[avg - min_val], [max_val - avg]], 
-                   fmt='none', color='black', capsize=5, capthick=2)
     
     # Add reference lines
     ax.axhline(80, color='#2ecc71', linestyle='--', linewidth=2, alpha=0.7, label='Excellent (≥80)')
@@ -294,7 +386,7 @@ def create_maintainability_bars(data, output_dir):
     
     ax.set_xlabel('Model', fontweight='bold')
     ax.set_ylabel('Maintainability Index', fontweight='bold')
-    ax.set_title('Maintainability Index by Model\n(Error bars show min-max range)', 
+    ax.set_title('Maintainability Index by Model (3 samples)\nMean across tasks', 
                  fontweight='bold', pad=20)
     ax.set_xticks(x)
     ax.set_xticklabels(models, rotation=45, ha='right')
@@ -323,16 +415,17 @@ def create_lines_of_code_boxplot(data, output_dir):
     for model_name, model_info in data["models"].items():
         locs = []
         for task_data in model_info["tasks"].values():
-            loc = task_data.get("quality", {}).get("Radon", {}).get("details", {}).get("lines_of_code", 0)
-            if loc > 0:
-                locs.append(loc)
+            for sample in task_data.get("samples", []):
+                loc = sample.get("quality", {}).get("Radon", {}).get("details", {}).get("lines_of_code", 0)
+                if loc > 0:
+                    locs.append(loc)
         
         if locs:
             model_locs[model_name] = locs
     
     if model_locs:
         # Create boxplot
-        bp = ax.boxplot(model_locs.values(), tick_labels=model_locs.keys(),
+        bp = ax.boxplot(list(model_locs.values()), tick_labels=list(model_locs.keys()),
                         patch_artist=True, showmeans=True, meanline=True)
         
         # Color the boxes
@@ -367,16 +460,17 @@ def create_execution_time_boxplot(data, output_dir):
     for model_name, model_info in data["models"].items():
         times = []
         for task_data in model_info["tasks"].values():
-            exec_time = task_data.get("quality", {}).get("Execution", {}).get("details", {}).get("execution_time_seconds", 0)
-            if exec_time > 0:
-                times.append(exec_time)
+            for sample in task_data.get("samples", []):
+                exec_time = sample.get("quality", {}).get("Execution", {}).get("details", {}).get("execution_time_seconds", 0)
+                if exec_time > 0:
+                    times.append(exec_time)
         
         if times:
             model_times[model_name] = times
     
     if model_times:
         # Create boxplot
-        bp = ax.boxplot(model_times.values(), tick_labels=model_times.keys(), 
+        bp = ax.boxplot(list(model_times.values()), tick_labels=list(model_times.keys()), 
                         patch_artist=True, showmeans=True, meanline=True)
         
         # Color the boxes
@@ -414,10 +508,11 @@ def create_security_issues_bars(data, output_dir):
     
     for model_name, model_info in data["models"].items():
         for task_data in model_info["tasks"].values():
-            details = task_data.get("quality", {}).get("Security", {}).get("details", {})
-            security_data[model_name]['Low'] += details.get("low_severity", 0)
-            security_data[model_name]['Medium'] += details.get("medium_severity", 0)
-            security_data[model_name]['High'] += details.get("high_severity", 0)
+            for sample in task_data.get("samples", []):
+                details = sample.get("quality", {}).get("Security", {}).get("details", {})
+                security_data[model_name]['Low'] += details.get("low_severity", 0)
+                security_data[model_name]['Medium'] += details.get("medium_severity", 0)
+                security_data[model_name]['High'] += details.get("high_severity", 0)
     
     # Create grouped bar chart
     x = np.arange(len(models))
@@ -447,37 +542,56 @@ def create_security_issues_bars(data, output_dir):
 
 
 def create_model_ranking_bars(data, output_dir):
-    """Chart 7: Horizontal bar chart ranking models by overall performance."""
+    """Chart 7: Horizontal bar chart ranking models by overall performance.
+    
+    Uses mean scores from sample statistics with standard deviation error bars.
+    """
     fig, ax = plt.subplots(figsize=(10, 8))
     
-    # Calculate overall score per model (average of all evaluator pass rates)
+    # Calculate overall score per model (average of all evaluator mean scores)
     model_scores = []
+    model_stds = []
     
     for model_name, model_info in data["models"].items():
-        scores = []
-        for task_data in model_info["tasks"].values():
-            quality = task_data.get("quality", {})
-            # Count how many evaluators passed
-            passed = sum(1 for q in quality.values() if q.get("passed", False))
-            scores.append((passed / 7) * 100)  # 7 evaluators total
+        task_scores = []
+        task_stds = []
         
-        avg_score = np.mean(scores)
-        model_scores.append((model_name, avg_score))
+        for task_data in model_info["tasks"].values():
+            eval_scores = []
+            eval_stds = []
+            
+            for eval_name in ['Syntax', 'Style', 'Security', 'Execution', 'Performance', 'Radon']:
+                mean_score, std_dev, _ = get_evaluator_stats(task_data, eval_name)
+                if mean_score > 0:
+                    eval_scores.append(mean_score)
+                    eval_stds.append(std_dev)
+            
+            if eval_scores:
+                task_mean = np.mean(eval_scores)
+                task_std = np.sqrt(np.mean([s**2 for s in eval_stds])) if eval_stds else 0.0
+                task_scores.append(task_mean)
+                task_stds.append(task_std)
+        
+        if task_scores:
+            avg_score = np.mean(task_scores) * 100
+            avg_std = np.sqrt(np.mean([s**2 for s in task_stds])) * 100 if task_stds else 0.0
+            model_scores.append((model_name, avg_score, avg_std))
     
     # Sort by score (descending)
     model_scores.sort(key=lambda x: x[1], reverse=True)
     
-    models = [m for m, _ in model_scores]
-    scores = [s for _, s in model_scores]
+    models = [m for m, _, _ in model_scores]
+    scores = [s for _, s, _ in model_scores]
+    stds = [s for _, _, s in model_scores]
     
     # Create horizontal bar chart
     y = np.arange(len(models))
     bars = ax.barh(y, scores, color=[get_model_color(m) for m in models],
                    edgecolor='black', linewidth=1)
     
-    ax.set_xlabel('Average Pass Rate (%)', fontweight='bold')
+    ax.set_xlabel('Average Quality Score (%)', fontweight='bold')
     ax.set_ylabel('Model', fontweight='bold')
-    ax.set_title('Model Performance Ranking\n(Based on average pass rate across all evaluators)', 
+    ax.set_title('Model Performance Ranking (3 samples)\nMean across all evaluators and tasks', 
                  fontweight='bold', pad=20)
     ax.set_yticks(y)
     ax.set_yticklabels(models)
@@ -488,7 +602,7 @@ def create_model_ranking_bars(data, output_dir):
     for i, (bar, score) in enumerate(zip(bars, scores)):
         width = bar.get_width()
         ax.text(width + 1, bar.get_y() + bar.get_height()/2.,
-                f'{score:.1f}%', ha='left', va='center', fontweight='bold')
+                f'{score:.1f}', ha='left', va='center', fontweight='bold', fontsize=9)
     
     # Invert y-axis so best model is at top
     ax.invert_yaxis()
@@ -497,6 +611,165 @@ def create_model_ranking_bars(data, output_dir):
     plt.savefig(output_dir / '07_model_ranking.png', bbox_inches='tight')
     plt.close()
     print("[OK] Created: 07_model_ranking.png")
+
+
+def create_sample_consistency_bars(data, output_dir):
+    """Chart 8: Grouped bar chart showing sample consistency (pass fractions) per model-evaluator.
+    
+    Shows how many samples passed out of 3 for each evaluator and model.
+    Displays fractions like '2/3' on the bars.
+    """
+    fig, ax = plt.subplots(figsize=(16, 9))
+    
+    models = list(data["models"].keys())
+    evaluators = ['Syntax', 'Style', 'Security', 'Execution', 'Performance', 'Radon', 'Functional']
+    
+    # Prepare data: pass fractions (e.g., "2/3") and pass rates per model-evaluator
+    model_data = {model: {evaluator: {"pass_rate": 0.0, "pass_count": "0/0"} 
+                         for evaluator in evaluators} for model in models}
+    
+    for model_name, model_info in data["models"].items():
+        for task_id, task_data in model_info["tasks"].items():
+            # Compute pass rates directly from samples
+            samples = task_data.get("samples", [])
+            if not samples:
+                continue
+            
+            for evaluator in evaluators:
+                passes = []
+                for sample in samples:
+                    if evaluator == "Functional":
+                        passed = sample.get("functional", {}).get("test_passed", False)
+                    else:
+                        eval_data = sample.get("quality", {}).get(evaluator, {})
+                        passed = eval_data.get("passed", False) if eval_data else False
+                    passes.append(1 if passed else 0)
+                
+                pass_rate = sum(passes) / len(passes) if passes else 0.0
+                pass_count = f"{sum(passes)}/{len(passes)}"
+                
+                # Accumulate pass rates for averaging
+                old_rate = model_data[model_name][evaluator]["pass_rate"]
+                model_data[model_name][evaluator]["pass_rate"] = (old_rate + pass_rate) / 2
+                
+                # Keep the pass count string (just use latest for display)
+                model_data[model_name][evaluator]["pass_count"] = pass_count
+    
+    # Convert to percentages
+    for model in models:
+        for evaluator in evaluators:
+            model_data[model][evaluator]["pass_rate"] *= 100
+    
+    # Create grouped bar chart
+    x = np.arange(len(evaluators))
+    width = 0.15
+    
+    for i, model in enumerate(models):
+        pass_rates = [model_data[model][eval]["pass_rate"] for eval in evaluators]
+        pass_counts = [model_data[model][eval]["pass_count"] for eval in evaluators]
+        offset = (i - len(models)/2 + 0.5) * width
+        
+        bars = ax.bar(x + offset, pass_rates, width, label=model, 
+                      color=get_model_color(model), edgecolor='black', linewidth=0.5)
+        
+        # Add pass fraction labels on bars (e.g., "2/3")
+        for bar, count in zip(bars, pass_counts):
+            height = bar.get_height()
+            if height > 5:  # Only show label if bar is tall enough
+                ax.text(bar.get_x() + bar.get_width()/2., height/2,
+                       count, ha='center', va='center', 
+                       fontsize=7, fontweight='bold', color='white')
+    
+    ax.set_xlabel('Evaluator', fontweight='bold')
+    ax.set_ylabel('Mean Pass Rate (%)', fontweight='bold')
+    ax.set_title('Sample Consistency: Pass Fractions per Model and Evaluator (3 samples)\nLabels show fraction (e.g., 2/3 = 2 passed out of 3)',
+                 fontweight='bold', pad=20)
+    ax.set_xticks(x)
+    ax.set_xticklabels(evaluators)
+    ax.legend(title='Models', bbox_to_anchor=(1.05, 1), loc='upper left')
+    ax.set_ylim(0, 105)
+    ax.grid(axis='y', alpha=0.3)
+    
+    plt.tight_layout()
+    plt.savefig(output_dir / '08_sample_consistency.png', bbox_inches='tight')
+    plt.close()
+    print("[OK] Created: 08_sample_consistency.png")
+
+
+def create_generation_speed_bars(data, output_dir):
+    """Chart 9: Bar chart comparing generation speed (tokens per second) per model."""
+    fig, ax = plt.subplots(figsize=(12, 7))
+    
+    model_speeds = {}
+    model_tokens = {}
+    
+    # Try to load timing data from metadata files
+    metadata_dir = Path("generated_code")
+    for metadata_file in metadata_dir.glob("metadata_*.json"):
+        try:
+            with open(metadata_file, 'r', encoding='utf-8') as f:
+                metadata = json.load(f)
+            
+            for result in metadata.get("results", []):
+                if result.get("status") == "success":
+                    model_name = result.get("model_name", "")
+                    timing = result.get("timing", {})
+                    
+                    if timing and timing.get("tokens_per_second"):
+                        if model_name not in model_speeds:
+                            model_speeds[model_name] = []
+                            model_tokens[model_name] = []
+                        
+                        model_speeds[model_name].append(timing["tokens_per_second"])
+                        if timing.get("eval_count"):
+                            model_tokens[model_name].append(timing["eval_count"])
+        except Exception:
+            pass
+    
+    if not model_speeds:
+        print("[SKIP] No timing data found for generation speed chart")
+        plt.close()
+        return
+    
+    # Calculate averages
+    models = sorted(model_speeds.keys())
+    avg_speeds = []
+    avg_tokens = []
+    
+    for model in models:
+        speeds = model_speeds[model]
+        avg_speeds.append(np.mean(speeds))
+        if model in model_tokens and model_tokens[model]:
+            avg_tokens.append(np.mean(model_tokens[model]))
+        else:
+            avg_tokens.append(0)
+    
+    # Create bar chart
+    x = np.arange(len(models))
+    bars = ax.bar(x, avg_speeds, color=[get_model_color(m.replace(":", "_")) for m in models],
+                  edgecolor='black', linewidth=1)
+    
+    ax.set_xlabel('Model', fontweight='bold')
+    ax.set_ylabel('Tokens per Second', fontweight='bold')
+    ax.set_title('Code Generation Speed by Model\n(Higher is faster)', 
+                 fontweight='bold', pad=20)
+    ax.set_xticks(x)
+    ax.set_xticklabels(models, rotation=45, ha='right')
+    ax.grid(axis='y', alpha=0.3)
+    
+    # Add value labels on bars
+    for i, (bar, speed, tokens) in enumerate(zip(bars, avg_speeds, avg_tokens)):
+        height = bar.get_height()
+        label = f'{speed:.1f}'
+        if tokens > 0:
+            label += f'\n({tokens:.0f} tok)'
+        ax.text(bar.get_x() + bar.get_width()/2., height + 1,
+                label, ha='center', va='bottom', fontweight='bold', fontsize=9)
+    
+    plt.tight_layout()
+    plt.savefig(output_dir / '09_generation_speed.png', bbox_inches='tight')
+    plt.close()
+    print("[OK] Created: 09_generation_speed.png")
 
 
 def main():
@@ -545,19 +818,23 @@ def main():
     create_execution_time_boxplot(data, output_dir)
     create_security_issues_bars(data, output_dir)
     create_model_ranking_bars(data, output_dir)
+    create_sample_consistency_bars(data, output_dir)
+    create_generation_speed_bars(data, output_dir)
     
     print("=" * 70)
     print("\nANALYSIS COMPLETE!")
     print("=" * 70)
-    print(f"\nGenerated 7 comparison charts in: {output_dir}")
+    print(f"\nGenerated 9 comparison charts in: {output_dir}")
     print("\nCharts created:")
-    print("  1. Evaluator comparison (side-by-side bars)")
-    print("  2. Task performance (grouped bars)")
-    print("  3. Maintainability index (bars with error ranges)")
-    print("  4. Lines of code (simple bars)")
+    print("  1. Evaluator comparison (side-by-side bars with std dev)")
+    print("  2. Task performance (grouped bars with std dev)")
+    print("  3. Maintainability index (bars with std dev)")
+    print("  4. Lines of code (boxplot)")
     print("  5. Execution times (boxplot)")
     print("  6. Security issues (grouped bars by severity)")
-    print("  7. Model ranking (horizontal bars)")
+    print("  7. Model ranking (horizontal bars with std dev)")
+    print("  8. Sample consistency (pass fractions: 2/3, 3/3, etc.)")
+    print("  9. Generation speed (tokens per second)")
     print("\nEach model has a consistent color across all charts:")
     for model, color in MODEL_COLORS.items():
         if model in data["models"]:
