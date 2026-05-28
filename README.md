@@ -1,6 +1,6 @@
 # LLM Prompt Runner & Code Evaluator
 
-Dit project genereert Python code door prompts uit te voeren op lokale LLM (Large Language Model) modellen via Ollama, en evalueert de gegenereerde code volgens de ISO/IEC 5055:2021 standaard voor software kwaliteit.
+Dit project genereert Python code door prompts uit te voeren op lokale LLM (Large Language Model) modellen via Ollama, en evalueert de gegenereerde code.
 
 ## Overzicht
 
