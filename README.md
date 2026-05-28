@@ -58,7 +58,7 @@ python -m venv .venv
 source .venv/bin/activate
 
 # Installeer benodigde packages
-pip install requests bandit psutil radon ruff
+pip install -r requirements.txt
 ```
 
 ### Stap 3: LLM Modellen Downloaden
