@@ -210,14 +210,16 @@ def compute_sample_statistics(sample_results: List[Dict[str, Any]]) -> Dict[str,
     if not sample_results:
         return stats
     
-    first_evals = sample_results[0].get("quality", {}).get("evaluations", {})
+    first_quality = sample_results[0].get("quality", {})
+    # Get all evaluator names (skip 'error' key if present)
+    eval_names = [k for k in first_quality.keys() if k != "error" and isinstance(first_quality[k], dict)]
     
-    for eval_name in first_evals.keys():
+    for eval_name in eval_names:
         scores = []
         passes = []
         
         for sample in sample_results:
-            eval_data = sample.get("quality", {}).get("evaluations", {}).get(eval_name, {})
+            eval_data = sample.get("quality", {}).get(eval_name, {})
             scores.append(eval_data.get("score", 0.0))
             passes.append(1 if eval_data.get("passed", False) else 0)
         

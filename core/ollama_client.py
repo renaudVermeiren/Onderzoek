@@ -104,6 +104,62 @@ def send_prompt_to_model(model_name, prompt_content, timeout=TIMEOUT_SECONDS, se
     except Exception as e:
         raise RuntimeError(f"Failed to send prompt to {model_name}: {e}")
 
+def extract_timing_metrics(response_json):
+    """
+    Extract timing and token metrics from Ollama response.
+    
+    Args:
+        response_json: The JSON response from Ollama
+    
+    Returns:
+        Dictionary with timing metrics (total_duration, tokens_per_second, etc.)
+    """
+    metrics = {
+        "total_duration_sec": None,
+        "load_duration_sec": None,
+        "prompt_eval_count": None,
+        "prompt_eval_duration_sec": None,
+        "eval_count": None,
+        "eval_duration_sec": None,
+        "tokens_per_second": None,
+        "prompt_tokens_per_second": None
+    }
+    
+    try:
+        # Ollama returns durations in nanoseconds
+        total_ns = response_json.get("total_duration")
+        load_ns = response_json.get("load_duration")
+        prompt_eval_count = response_json.get("prompt_eval_count")
+        prompt_eval_ns = response_json.get("prompt_eval_duration")
+        eval_count = response_json.get("eval_count")
+        eval_ns = response_json.get("eval_duration")
+        
+        # Convert nanoseconds to seconds
+        if total_ns is not None:
+            metrics["total_duration_sec"] = round(total_ns / 1e9, 3)
+        if load_ns is not None:
+            metrics["load_duration_sec"] = round(load_ns / 1e9, 3)
+        if prompt_eval_ns is not None:
+            metrics["prompt_eval_duration_sec"] = round(prompt_eval_ns / 1e9, 3)
+        if eval_ns is not None:
+            metrics["eval_duration_sec"] = round(eval_ns / 1e9, 3)
+        
+        metrics["prompt_eval_count"] = prompt_eval_count
+        metrics["eval_count"] = eval_count
+        
+        # Calculate tokens per second for generation
+        if eval_count and eval_ns and eval_ns > 0:
+            metrics["tokens_per_second"] = round(eval_count / (eval_ns / 1e9), 2)
+        
+        # Calculate tokens per second for prompt evaluation
+        if prompt_eval_count and prompt_eval_ns and prompt_eval_ns > 0:
+            metrics["prompt_tokens_per_second"] = round(prompt_eval_count / (prompt_eval_ns / 1e9), 2)
+        
+        return metrics
+    except Exception:
+        return metrics
+
+
 def extract_code_from_response(response_json):
     """
     Extract generated code from Ollama response.

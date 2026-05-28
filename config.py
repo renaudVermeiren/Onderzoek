@@ -9,7 +9,7 @@ MODELS_TO_TEST = [
    'llama3:latest',
    'qwen2.5-coder:latest',
    'phi4-mini:latest',
-   'qwen3.5:latest'
+   #'qwen3.5:latest'
 ]
 
 # Directory for saving generated code outputs

@@ -10,11 +10,12 @@ gestructureerde folder per model en taak.
 import sys
 import json
 import shutil
+import statistics
 from pathlib import Path
 from datetime import datetime
 
 from config import MODELS_TO_TEST, OUTPUT_DIR, NUM_SAMPLES, SAMPLE_SEEDS
-from core.ollama_client import check_ollama_running, get_available_models, send_prompt_to_model, extract_code_from_response
+from core.ollama_client import check_ollama_running, get_available_models, send_prompt_to_model, extract_code_from_response, extract_timing_metrics
 
 
 def load_all_tasks(prompts_dir="prompts"):
@@ -193,13 +194,18 @@ def run_all_tasks():
                     "timestamp": datetime.now().isoformat(),
                     "status": "error",
                     "output_folder": None,
-                    "error_message": None
+                    "error_message": None,
+                    "timing": {}
                 }
                 
                 try:
                     # Stuur prompt naar model with specific seed
                     prompt_text = task.get('prompt', '')
                     response = send_prompt_to_model(model_name, prompt_text, seed=seed)
+                    
+                    # Extract timing metrics from response
+                    timing = extract_timing_metrics(response)
+                    result["timing"] = timing
                     
                     # Extract code uit response
                     code_content = extract_code_from_response(response)
@@ -219,6 +225,8 @@ def run_all_tasks():
                         preview += '\n   ...'
                     
                     print(f"      ✅ Success!")
+                    if timing.get("tokens_per_second"):
+                        print(f"      ⚡ Speed: {timing['tokens_per_second']} tok/s | {timing.get('eval_count', '?')} tokens | {timing.get('total_duration_sec', '?')}s")
                     print(f"      📁 Saved to: {task_output_dir}/generated_script_v{sample_idx}.py")
                     
                 except TimeoutError as e:
@@ -247,6 +255,20 @@ def run_all_tasks():
     # Samenvatting
     successful = sum(1 for r in results if r["status"] == "success")
     failed = len(results) - successful
+    
+    # Timing statistics
+    timing_results = [r["timing"] for r in results if r["status"] == "success" and r.get("timing")]
+    if timing_results:
+        avg_tok_per_sec = statistics.mean([t.get("tokens_per_second", 0) or 0 for t in timing_results])
+        avg_total_time = statistics.mean([t.get("total_duration_sec", 0) or 0 for t in timing_results])
+        avg_tokens = statistics.mean([t.get("eval_count", 0) or 0 for t in timing_results])
+        
+        print("\n" + "=" * 70)
+        print("⚡ Timing Summary")
+        print("=" * 70)
+        print(f"Avg tokens/sec: {avg_tok_per_sec:.1f}")
+        print(f"Avg total time: {avg_total_time:.1f}s")
+        print(f"Avg tokens:     {avg_tokens:.0f}")
     
     print("\n" + "=" * 70)
     print("📊 Execution Summary")
