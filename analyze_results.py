@@ -273,9 +273,8 @@ def create_task_success_bars(data, output_dir):
             
             for eval_name in ['Syntax', 'Style', 'Security', 'Execution', 'Performance', 'Radon']:
                 mean_score, std_dev, _ = get_evaluator_stats(task_data, eval_name)
-                if mean_score > 0:
-                    eval_scores.append(mean_score)
-                    eval_stds.append(std_dev)
+                eval_scores.append(mean_score)
+                eval_stds.append(std_dev)
             
             if eval_scores:
                 score = np.mean(eval_scores) * 100
@@ -562,9 +561,8 @@ def create_model_ranking_bars(data, output_dir):
             
             for eval_name in ['Syntax', 'Style', 'Security', 'Execution', 'Performance', 'Radon']:
                 mean_score, std_dev, _ = get_evaluator_stats(task_data, eval_name)
-                if mean_score > 0:
-                    eval_scores.append(mean_score)
-                    eval_stds.append(std_dev)
+                eval_scores.append(mean_score)
+                eval_stds.append(std_dev)
             
             if eval_scores:
                 task_mean = np.mean(eval_scores)
