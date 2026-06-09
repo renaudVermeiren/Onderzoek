@@ -58,7 +58,7 @@ python -m venv .venv
 source .venv/bin/activate
 
 # Installeer benodigde packages
-pip install requests bandit psutil radon ruff
+pip install -r requirements.txt
 ```
 
 ### Stap 3: LLM Modellen Downloaden
@@ -464,61 +464,7 @@ runner.register_evaluator(MijnEvaluator())
 
 4. Run `python evaluate.py`
 
-## Troubleshooting
 
-### Ollama Verbindingsproblemen
-
-**Probleem**: "Could not connect to Ollama. Is Ollama running?"
-
-**Oplossing**:
-```bash
-# Check of Ollama draait
-ollama list
-
-# Start Ollama (als het niet automatisch start)
-# Windows: Start Ollama vanuit Start Menu
-# macOS/Linux: ollama serve
-```
-
-### Model Niet Gevonden
-
-**Probleem**: "None of the configured models are available in Ollama"
-
-**Oplossing**:
-```bash
-# Installeer het model
-ollama pull <model_name>
-
-# Check beschikbare modellen
-ollama list
-```
-
-### Bandit, psutil, radon, of ruff Niet Geïnstalleerd
-
-**Probleem**: "Bandit is not installed", "psutil is not installed", "Radon is not installed", of "Ruff is not installed"
-
-**Oplossing**:
-```bash
-pip install bandit psutil radon ruff
-```
-
-### Timeout Bij Code Generatie
-
-**Probleem**: Model timeout na 120 seconden
-
-**Oplossing**:
-1. Verhoog `TIMEOUT_SECONDS` in `config.py`
-2. Gebruik een lichter model
-3. Vereenvoudig je prompts
-
-### Performance Evaluator Timeout
-
-**Probleem**: "Bandit analysis timed out" of "Execution timed out"
-
-**Oplossing**:
-- Code bevat mogelijk een infinite loop
-- Verhoog de timeout in de evaluator class
-- Sommige scripts zijn te complex voor automatische testing
 
 ## Resultaten Interpreteren
 
