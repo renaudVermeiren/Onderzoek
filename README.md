@@ -15,8 +15,6 @@ Dit systeem:
    - **Performance** - Meet CPU en memory gebruik tijdens executie met psutil
    - **Maintainability** - Analyseert complexiteit en onderhoudbaarheid met Radon
 
-Het systeem is gebaseerd op het onderzoek van Krebs & Mazumdar (2025) dat LLM-gegenereerde code evalueert volgens vier ISO 5055 categorieën.
-
 ## Vereisten
 
 - **Python 3.8+** - Programmeertaal
