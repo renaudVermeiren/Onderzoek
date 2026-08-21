@@ -67,5 +67,6 @@ from core.evaluators.radon_evaluator import RadonEvaluator
 from core.evaluators.execution_evaluator import ExecutionEvaluator
 from core.evaluators.functional_test_evaluator import FunctionalTestEvaluator
 from core.evaluators.style_evaluator import StyleEvaluator
+from core.evaluators.scalability_evaluator import ScalabilityEvaluator
 
-__all__ = ['BaseEvaluator', 'EvaluationResult', 'SyntaxEvaluator', 'SecurityEvaluator', 'PerformanceEvaluator', 'RadonEvaluator', 'ExecutionEvaluator', 'FunctionalTestEvaluator', 'StyleEvaluator']
+__all__ = ['BaseEvaluator', 'EvaluationResult', 'SyntaxEvaluator', 'SecurityEvaluator', 'PerformanceEvaluator', 'RadonEvaluator', 'ExecutionEvaluator', 'FunctionalTestEvaluator', 'StyleEvaluator', 'ScalabilityEvaluator']

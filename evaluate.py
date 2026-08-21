@@ -31,6 +31,7 @@ from core.evaluators.performance_evaluator import PerformanceEvaluator
 from core.evaluators.radon_evaluator import RadonEvaluator
 from core.evaluators.functional_test_evaluator import FunctionalTestEvaluator
 from core.evaluators.style_evaluator import StyleEvaluator
+from core.evaluators.scalability_evaluator import ScalabilityEvaluator
 
 
 def find_generated_scripts(task_folder: Path) -> List[Path]:
@@ -73,7 +74,8 @@ def run_quality_evaluation_for_sample(script_path: Path, model_name: str, task_i
         ("Security", SecurityEvaluator()),
         ("Execution", ExecutionEvaluator()),
         ("Performance", PerformanceEvaluator()),
-        ("Radon", RadonEvaluator())
+        ("Radon", RadonEvaluator()),
+        ("Scalability", ScalabilityEvaluator())
     ]
     
     evaluations = {}

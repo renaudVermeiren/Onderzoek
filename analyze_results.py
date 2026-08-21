@@ -41,7 +41,8 @@ EVAL_COLORS = {
     'Execution': '#f39c12',
     'Performance': '#e74c3c',
     'Radon': '#9b59b6',
-    'Functional': '#1abc9c'
+    'Functional': '#1abc9c',
+    'Scalability': '#e91e63'
 }
 
 
@@ -177,7 +178,7 @@ def create_evaluator_comparison_bars(data, output_dir):
     fig, ax = plt.subplots(figsize=(14, 8))
     
     models = list(data["models"].keys())
-    evaluators = ['Syntax', 'Style', 'Security', 'Execution', 'Performance', 'Radon', 'Functional']
+    evaluators = ['Syntax', 'Style', 'Security', 'Execution', 'Performance', 'Radon', 'Functional', 'Scalability']
     
     # Prepare data: mean pass rate and std dev per model-evaluator
     model_data = {model: {evaluator: {"mean": 0.0, "std": 0.0} for evaluator in evaluators} for model in models}
@@ -194,6 +195,9 @@ def create_evaluator_comparison_bars(data, output_dir):
                 for sample in samples:
                     if evaluator == "Functional":
                         passed = sample.get("functional", {}).get("test_passed", False)
+                    elif evaluator == "Scalability":
+                        eval_data = sample.get("quality", {}).get(evaluator, {})
+                        passed = eval_data.get("passed", False) if eval_data else False
                     else:
                         eval_data = sample.get("quality", {}).get(evaluator, {})
                         passed = eval_data.get("passed", False) if eval_data else False
@@ -559,7 +563,7 @@ def create_model_ranking_bars(data, output_dir):
             eval_scores = []
             eval_stds = []
             
-            for eval_name in ['Syntax', 'Style', 'Security', 'Execution', 'Performance', 'Radon']:
+            for eval_name in ['Syntax', 'Style', 'Security', 'Execution', 'Performance', 'Radon', 'Scalability']:
                 mean_score, std_dev, _ = get_evaluator_stats(task_data, eval_name)
                 eval_scores.append(mean_score)
                 eval_stds.append(std_dev)
@@ -620,7 +624,7 @@ def create_sample_consistency_bars(data, output_dir):
     fig, ax = plt.subplots(figsize=(16, 9))
     
     models = list(data["models"].keys())
-    evaluators = ['Syntax', 'Style', 'Security', 'Execution', 'Performance', 'Radon', 'Functional']
+    evaluators = ['Syntax', 'Style', 'Security', 'Execution', 'Performance', 'Radon', 'Functional', 'Scalability']
     
     # Prepare data: pass fractions (e.g., "2/3") and pass rates per model-evaluator
     model_data = {model: {evaluator: {"pass_rate": 0.0, "pass_count": "0/0"} 
@@ -638,6 +642,9 @@ def create_sample_consistency_bars(data, output_dir):
                 for sample in samples:
                     if evaluator == "Functional":
                         passed = sample.get("functional", {}).get("test_passed", False)
+                    elif evaluator == "Scalability":
+                        eval_data = sample.get("quality", {}).get(evaluator, {})
+                        passed = eval_data.get("passed", False) if eval_data else False
                     else:
                         eval_data = sample.get("quality", {}).get(evaluator, {})
                         passed = eval_data.get("passed", False) if eval_data else False
@@ -692,6 +699,88 @@ def create_sample_consistency_bars(data, output_dir):
     plt.savefig(output_dir / '08_sample_consistency.png', bbox_inches='tight')
     plt.close()
     print("[OK] Created: 08_sample_consistency.png")
+
+
+def create_individual_evaluator_graphs(data, output_dir):
+    """Chart 10-16: Individual bar charts, one per evaluator, for discussing each separately."""
+    models = list(data["models"].keys())
+    evaluators = ['Syntax', 'Style', 'Security', 'Execution', 'Performance', 'Radon', 'Functional', 'Scalability']
+
+    model_data = {model: {evaluator: {"mean": 0.0, "std": 0.0} for evaluator in evaluators} for model in models}
+
+    for model_name, model_info in data["models"].items():
+        for task_id, task_data in model_info["tasks"].items():
+            for evaluator in evaluators:
+                samples = task_data.get("samples", [])
+                if not samples:
+                    continue
+
+                passes = []
+                for sample in samples:
+                    if evaluator == "Functional":
+                        passed = sample.get("functional", {}).get("test_passed", False)
+                    elif evaluator == "Scalability":
+                        eval_data = sample.get("quality", {}).get(evaluator, {})
+                        passed = eval_data.get("passed", False) if eval_data else False
+                    else:
+                        eval_data = sample.get("quality", {}).get(evaluator, {})
+                        passed = eval_data.get("passed", False) if eval_data else False
+                    passes.append(1 if passed else 0)
+
+                pass_rate = sum(passes) / len(passes) if passes else 0.0
+
+                _, std_dev, _ = get_evaluator_stats(task_data, evaluator)
+
+                if model_data[model_name][evaluator]["mean"] == 0.0:
+                    model_data[model_name][evaluator]["mean"] = pass_rate
+                    model_data[model_name][evaluator]["std"] = std_dev
+                else:
+                    old_mean = model_data[model_name][evaluator]["mean"]
+                    old_std = model_data[model_name][evaluator]["std"]
+                    model_data[model_name][evaluator]["mean"] = (old_mean + pass_rate) / 2
+                    model_data[model_name][evaluator]["std"] = np.sqrt((old_std**2 + std_dev**2) / 2)
+
+    for model in models:
+        for evaluator in evaluators:
+            model_data[model][evaluator]["mean"] *= 100
+            model_data[model][evaluator]["std"] *= 100
+
+    start_idx = 10
+    for idx, evaluator in enumerate(evaluators):
+        fig, ax = plt.subplots(figsize=(10, 7))
+
+        model_names = []
+        means = []
+        stds = []
+        for model in models:
+            model_names.append(model)
+            means.append(model_data[model][evaluator]["mean"])
+            stds.append(model_data[model][evaluator]["std"])
+
+        x = np.arange(len(model_names))
+        bars = ax.bar(x, means, color=[get_model_color(m) for m in model_names],
+                      edgecolor='black', linewidth=1)
+
+        ax.set_xlabel('Model', fontweight='bold')
+        ax.set_ylabel('Mean Pass Rate (%)', fontweight='bold')
+        ax.set_title(f'{evaluator} Pass Rate by Model (3 samples)\nMean across tasks',
+                     fontweight='bold', pad=20)
+        ax.set_xticks(x)
+        ax.set_xticklabels(model_names, rotation=45, ha='right')
+        ax.set_ylim(0, 105)
+        ax.grid(axis='y', alpha=0.3)
+
+        for bar, val in zip(bars, means):
+            height = bar.get_height()
+            ax.text(bar.get_x() + bar.get_width()/2., height + 1.5,
+                    f'{val:.1f}%', ha='center', va='bottom', fontweight='bold', fontsize=9)
+
+        file_num = start_idx + idx
+        filename = f'{file_num:02d}_{evaluator.lower()}.png'
+        plt.tight_layout()
+        plt.savefig(output_dir / filename, bbox_inches='tight')
+        plt.close()
+        print(f"[OK] Created: {filename}")
 
 
 def create_generation_speed_bars(data, output_dir):
@@ -770,6 +859,103 @@ def create_generation_speed_bars(data, output_dir):
     print("[OK] Created: 09_generation_speed.png")
 
 
+def create_scalability_curves(data, output_dir):
+    """Chart 17: Two-panel plot showing execution time and memory vs. scale factor."""
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 7))
+
+    models = list(data["models"].keys())
+
+    model_scale_data = {}
+
+    for model_name, model_info in data["models"].items():
+        time_by_factor = {}
+        mem_by_factor = {}
+
+        for task_id, task_data in model_info["tasks"].items():
+            for sample in task_data.get("samples", []):
+                details = sample.get("quality", {}).get("Scalability", {}).get("details", {})
+                if not details:
+                    continue
+
+                for result in details.get("scale_results", []):
+                    factor = result["scale_factor"]
+                    if factor == 1:
+                        continue
+                    if result["status"] != "passed":
+                        continue
+
+                    if factor not in time_by_factor:
+                        time_by_factor[factor] = []
+                        mem_by_factor[factor] = []
+
+                    time_by_factor[factor].append(result["execution_time_sec"])
+                    mem_by_factor[factor].append(result["peak_memory_mb"])
+
+        if time_by_factor:
+            model_scale_data[model_name] = {
+                "factors": sorted(time_by_factor.keys()),
+                "avg_times": [np.mean(time_by_factor[f]) for f in sorted(time_by_factor.keys())],
+                "avg_memory": [np.mean(mem_by_factor[f]) for f in sorted(time_by_factor.keys())],
+                "std_times": [np.std(time_by_factor[f]) if len(time_by_factor[f]) > 1 else 0 for f in sorted(time_by_factor.keys())],
+                "std_memory": [np.std(mem_by_factor[f]) if len(mem_by_factor[f]) > 1 else 0 for f in sorted(time_by_factor.keys())],
+            }
+
+    if not model_scale_data:
+        print("[SKIP] No scalability data found")
+        plt.close()
+        return
+
+    for model_name, data in model_scale_data.items():
+        factors = data["factors"]
+        ax1.plot(factors, data["avg_times"], marker='o', label=model_name,
+                 color=get_model_color(model_name), linewidth=2)
+        ax1.fill_between(factors,
+                         np.array(data["avg_times"]) - np.array(data["std_times"]),
+                         np.array(data["avg_times"]) + np.array(data["std_times"]),
+                         color=get_model_color(model_name), alpha=0.15)
+
+    all_times = [t for d in model_scale_data.values() for t in d["avg_times"]]
+    all_factors = [f for d in model_scale_data.values() for f in d["factors"]]
+    if all_times and all_factors:
+        min_time = min(all_times)
+        min_factor = min(all_factors)
+        max_factor = max(all_factors)
+        if min_factor > 0:
+            ideal_x = [min_factor, max_factor]
+            ideal_y = [min_time, min_time * (max_factor / min_factor)]
+            ax1.plot(ideal_x, ideal_y, 'k--', linewidth=2, alpha=0.5, label='Ideal linear')
+
+    ax1.set_xscale('log')
+    ax1.set_xlabel('Scale Factor (log scale)', fontweight='bold')
+    ax1.set_ylabel('Execution Time (seconds)', fontweight='bold')
+    ax1.set_title('Execution Time vs. Data Size', fontweight='bold', pad=15)
+    ax1.legend(loc='upper left')
+    ax1.grid(True, alpha=0.3)
+
+    for model_name, data in model_scale_data.items():
+        factors = data["factors"]
+        ax2.plot(factors, data["avg_memory"], marker='s', label=model_name,
+                 color=get_model_color(model_name), linewidth=2)
+        ax2.fill_between(factors,
+                         np.array(data["avg_memory"]) - np.array(data["std_memory"]),
+                         np.array(data["avg_memory"]) + np.array(data["std_memory"]),
+                         color=get_model_color(model_name), alpha=0.15)
+
+    ax2.axhline(y=2048, color='r', linestyle='--', linewidth=2, alpha=0.7, label='2GB Limit')
+
+    ax2.set_xscale('log')
+    ax2.set_xlabel('Scale Factor (log scale)', fontweight='bold')
+    ax2.set_ylabel('Peak Memory (MB)', fontweight='bold')
+    ax2.set_title('Peak Memory vs. Data Size', fontweight='bold', pad=15)
+    ax2.legend(loc='upper left')
+    ax2.grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    plt.savefig(output_dir / '17_scalability_curves.png', bbox_inches='tight')
+    plt.close()
+    print("[OK] Created: 17_scalability_curves.png")
+
+
 def main():
     """Main function to run all analyses."""
     print("=" * 70)
@@ -818,11 +1004,13 @@ def main():
     create_model_ranking_bars(data, output_dir)
     create_sample_consistency_bars(data, output_dir)
     create_generation_speed_bars(data, output_dir)
-    
+    create_individual_evaluator_graphs(data, output_dir)
+    create_scalability_curves(data, output_dir)
+
     print("=" * 70)
     print("\nANALYSIS COMPLETE!")
     print("=" * 70)
-    print(f"\nGenerated 9 comparison charts in: {output_dir}")
+    print(f"\nGenerated 17 comparison charts in: {output_dir}")
     print("\nCharts created:")
     print("  1. Evaluator comparison (side-by-side bars with std dev)")
     print("  2. Task performance (grouped bars with std dev)")
@@ -833,6 +1021,14 @@ def main():
     print("  7. Model ranking (horizontal bars with std dev)")
     print("  8. Sample consistency (pass fractions: 2/3, 3/3, etc.)")
     print("  9. Generation speed (tokens per second)")
+    print(" 10. Syntax individual bar chart")
+    print(" 11. Style individual bar chart")
+    print(" 12. Security individual bar chart")
+    print(" 13. Execution individual bar chart")
+    print(" 14. Performance individual bar chart")
+    print(" 15. Radon individual bar chart")
+    print(" 16. Functional individual bar chart")
+    print(" 17. Scalability curves (execution time & memory vs. scale)")
     print("\nEach model has a consistent color across all charts:")
     for model, color in MODEL_COLORS.items():
         if model in data["models"]:
